@@ -1,0 +1,76 @@
+#!/bin/bash
+# The MIT License (MIT)
+#
+# Copyright (c) 2018 Jesper Pedersen <jesper.pedersen@redhat.com>
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the Software
+# is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+# INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+# PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+# OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+#
+
+if [ ! -f /pgdata/PG_VERSION ]; then
+    export PG_MAX_CONNECTIONS=${PG_MAX_CONNECTIONS:-100}
+    export PG_SHARED_BUFFERS=${PG_SHARED_BUFFERS:-256}
+    export PG_WORK_MEM=${PG_WORK_MEM:-8}
+    export PG_MAX_PARALLEL_WORKERS=${PG_MAX_PARALLEL_WORKERS:-8}
+    export PG_EFFECTIVE_CACHE_SIZE=${PG_EFFECTIVE_CACHE_SIZE:-1}
+
+    export PG_DATABASE=${PG_DATABASE}
+    export PG_DATABASE_ENCODING=${PG_DATABASE_ENCODING:-UTF8}
+    export PG_USER_NAME=${PG_USER_NAME}
+    export PG_USER_PASSWORD=${PG_USER_PASSWORD}
+    export PG_REPLICATION_NAME=${PG_REPLICATION_NAME}
+    export PG_REPLICATION_PASSWORD=${PG_REPLICATION_PASSWORD}
+
+    if [ -z "${PG_DATABASE}" ||
+         -z "${PG_USER_NAME}" || -z "${PG_USER_PASSWORD}" ||
+         -z "${PG_REPLICATION_NAME}" || -z "${PG_REPLICATION_PASSWORD} "]; then
+        echo "PG_DATABASE, PG_USER_NAME, PG_USER_PASSWORD, PG_REPLICATION_NAME and PG_REPLICATION_PASSWORD needs to be defined."
+        exit 1
+    fi
+    
+    /usr/pgsql-10/bin/initdb -k -X /pgwal/ /pgdata/
+
+    sed -i "s/PG_MAX_CONNECTIONS/$PG_MAX_CONNECTIONS/g" /pgconf/postgresql.conf
+    sed -i "s/PG_SHARED_BUFFERS/$PG_SHARED_BUFFERS/g" /pgconf/postgresql.conf
+    sed -i "s/PG_WORK_MEM/$PG_WORK_MEM/g" /pgconf/postgresql.conf
+    sed -i "s/PG_MAX_PARALLEL_WORKERS/$PG_MAX_PARALLEL_WORKERS/g" /pgconf/postgresql.conf
+    sed -i "s/PG_EFFECTIVE_CACHE_SIZE/$PG_EFFECTIVE_CACHE_SIZE/g" /pgconf/postgresql.conf
+
+    sed -i "s/PG_DATABASE/$PG_DATABASE/g" /pgconf/pg_hba.conf
+    sed -i "s/PG_USER_NAME/$PG_USER_NAME/g" /pgconf/pg_hba.conf
+    sed -i "s/PG_REPLICATION_NAME/$PG_REPLICATION_NAME/g" /pgconf/pg_hba.conf
+    
+    cp /pgconf/postgresql.conf /pgdata/
+    cp /pgconf/pg_hba.conf /pgdata/
+
+    (crontab -l ; echo "00 06  *   *   0     /usr/bin/pgbackrest --type=full --stanza=main backup") | crontab -
+    (crontab -l ; echo "00 06  *   *   1-6   /usr/bin/pgbackrest --type=diff --stanza=main backup") | crontab -
+    
+    sed -i "s/PG_DATABASE_ENCODING/$PG_DATABASE_ENCODING/g" /pgconf/setup.sql
+    sed -i "s/PG_DATABASE/$PG_DATABASE/g" /pgconf/setup.sql
+    sed -i "s/PG_USER_NAME/$PG_USER_NAME/g" /pgconf/setup.sql
+    sed -i "s/PG_USER_PASSWORD/$PG_USER_PASSWORD/g" /pgconf/setup.sql
+    sed -i "s/PG_REPLICATION_NAME/$PG_REPLICATION_NAME/g" /pgconf/setup.sql
+    sed -i "s/PG_REPLICATION_PASSWORD/$PG_REPLICATION_PASSWORD/g" /pgconf/setup.sql
+
+    /usr/pgsql-10/bin/pg_ctl -D /pgdata/ start
+    /usr/pgsql-10/bin/psql -q -f /pgconf/setup.sql postgres
+    /usr/bin/pgbackrest --stanza=main stanza-create
+    /usr/pgsql-10/bin/pg_ctl -D /pgdata/ stop
+fi
+
+exec /usr/pgsql-10/bin/postgres -D /pgdata/ "$@"
