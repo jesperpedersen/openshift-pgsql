@@ -20,7 +20,7 @@ Features that should be added
 * Restrict network access in `pg_hba.conf`
 * Synchronous replication with `remote_apply`
 * Additional GUCs
-* [pgpool-II 3.8 image](http://www.pgpool.net)
+* [pgpool-II 4.0 image](http://www.pgpool.net)
 
 Images are provided **`AS IS`** according to the license agreement with
 no guarantees of correctness and stability.
