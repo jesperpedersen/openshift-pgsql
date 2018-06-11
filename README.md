@@ -17,6 +17,7 @@ The images makes use of
 Features that should be added
 
 * SSL support
+* Restrict network access in `pg_hba.conf`
 * Synchronous replication with `remote_apply`
 * Additional GUCs
 * [pgpool-II 3.8 image](http://www.pgpool.net)
