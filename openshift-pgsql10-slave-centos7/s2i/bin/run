@@ -22,10 +22,15 @@
 #
 
 if [ ! -f /pgdata/PG_VERSION ]; then
-    # if [ -z "${PG_MASTER}" || -z "${PG_REPLICATION_NAME}" || -z "${PG_REPLICATION_PASSWORD}" ]; then
-    #     echo "PG_MASTER, PG_REPLICATION_NAME and PG_REPLICATION_PASSWORD needs to be defined."
-    #     exit 1
-    # fi
+    export PG_MASTER=${PG_MASTER}
+    export PG_REPLICATION_NAME=${PG_REPLICATION_NAME}
+    export PG_REPLICATION_PASSWORD=${PG_REPLICATION_PASSWORD}
+
+    if [ [-z "${PG_MASTER}"] ||
+         [-z "${PG_REPLICATION_NAME}"] || [-z "${PG_REPLICATION_PASSWORD}"] ]; then
+        echo "PG_MASTER, PG_REPLICATION_NAME and PG_REPLICATION_PASSWORD needs to be defined."
+        exit 1
+    fi
 
     PGPASSWORD="$PG_REPLICATION_PASSWORD" /usr/pgsql-10/bin/pg_basebackup -X stream --no-password -c fast -h ${PG_MASTER} -U ${PG_REPLICATION_NAME} -D /pgdata
 

@@ -35,9 +35,9 @@ if [ ! -f /pgdata/PG_VERSION ]; then
     export PG_REPLICATION_NAME=${PG_REPLICATION_NAME}
     export PG_REPLICATION_PASSWORD=${PG_REPLICATION_PASSWORD}
 
-    if [ -z "${PG_DATABASE}" ||
-         -z "${PG_USER_NAME}" || -z "${PG_USER_PASSWORD}" ||
-         -z "${PG_REPLICATION_NAME}" || -z "${PG_REPLICATION_PASSWORD} "]; then
+    if [ [-z "${PG_DATABASE}"] ||
+         [-z "${PG_USER_NAME}"] || [-z "${PG_USER_PASSWORD}"] ||
+         [-z "${PG_REPLICATION_NAME}"] || [-z "${PG_REPLICATION_PASSWORD}"] ]; then
         echo "PG_DATABASE, PG_USER_NAME, PG_USER_PASSWORD, PG_REPLICATION_NAME and PG_REPLICATION_PASSWORD needs to be defined."
         exit 1
     fi
