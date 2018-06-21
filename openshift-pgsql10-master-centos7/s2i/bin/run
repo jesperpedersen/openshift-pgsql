@@ -34,11 +34,13 @@ if [ ! -f /pgdata/PG_VERSION ]; then
     export PG_USER_PASSWORD=${PG_USER_PASSWORD}
     export PG_REPLICATION_NAME=${PG_REPLICATION_NAME}
     export PG_REPLICATION_PASSWORD=${PG_REPLICATION_PASSWORD}
+    export PG_NETWORK_MASK=${PG_NETWORK_MASK}
 
     if [ [-z "${PG_DATABASE}"] ||
          [-z "${PG_USER_NAME}"] || [-z "${PG_USER_PASSWORD}"] ||
-         [-z "${PG_REPLICATION_NAME}"] || [-z "${PG_REPLICATION_PASSWORD}"] ]; then
-        echo "PG_DATABASE, PG_USER_NAME, PG_USER_PASSWORD, PG_REPLICATION_NAME and PG_REPLICATION_PASSWORD needs to be defined."
+         [-z "${PG_REPLICATION_NAME}"] || [-z "${PG_REPLICATION_PASSWORD}"] ||
+         [-z "${PG_NETWORK_MASK}"] ]; then
+        echo "PG_DATABASE, PG_USER_NAME, PG_USER_PASSWORD, PG_REPLICATION_NAME, PG_REPLICATION_PASSWORD and PG_NETWORK_MASK needs to be defined."
         exit 1
     fi
     
@@ -53,6 +55,7 @@ if [ ! -f /pgdata/PG_VERSION ]; then
     sed -i "s/PG_DATABASE/$PG_DATABASE/g" /pgconf/pg_hba.conf
     sed -i "s/PG_USER_NAME/$PG_USER_NAME/g" /pgconf/pg_hba.conf
     sed -i "s/PG_REPLICATION_NAME/$PG_REPLICATION_NAME/g" /pgconf/pg_hba.conf
+    sed -i "s/PG_NETWORK_MASK/$PG_NETWORK_MASK/g" /pgconf/pg_hba.conf
     
     cp /pgconf/postgresql.conf /pgdata/
     cp /pgconf/pg_hba.conf /pgdata/

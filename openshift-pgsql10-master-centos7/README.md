@@ -8,7 +8,7 @@ This project contains the PostgreSQL Master image for OpenShift.
 su -
 systemctl start docker
 make build
-docker run -p 5432:5432 -e PG_DATABASE=mydb -e PG_USER_NAME=myuser -e PG_USER_PASSWORD=pass -e PG_REPLICATION_NAME=repl -e PG_REPLICATION_PASSWORD=replpass openshift-pgsql10-master-centos7
+docker run -p 5432:5432 -e PG_DATABASE=mydb -e PG_USER_NAME=myuser -e PG_USER_PASSWORD=pass -e PG_REPLICATION_NAME=repl -e PG_REPLICATION_PASSWORD=replpass -e PG_NETWORK_MASK=172.10.0.0/16 openshift-pgsql10-master-centos7
 ```
 
 ## Configuration
@@ -20,6 +20,7 @@ docker run -p 5432:5432 -e PG_DATABASE=mydb -e PG_USER_NAME=myuser -e PG_USER_PA
 | PG_USER_PASSWORD | | | Yes | The password for the user |
 | PG_REPLICATION_NAME | | | Yes | The replication user |
 | PG_REPLICATION_PASSWORD | | | Yes | The password for the replication user |
+| PG_NETWORK_MASK | | | Yes | The network mask for database access |
 | PG_DATABASE_ENCODING | UTF8 | | | The encoding of the database |
 | PG_MAX_CONNECTIONS | 100 | | | `max_connections` setting |
 | PG_SHARED_BUFFERS | 256 | MB | | `shared_buffers` setting |
