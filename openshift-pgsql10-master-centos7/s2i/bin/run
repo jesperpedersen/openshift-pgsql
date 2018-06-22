@@ -56,9 +56,26 @@ if [ ! -f /pgdata/PG_VERSION ]; then
     sed -i "s/PG_USER_NAME/$PG_USER_NAME/g" /pgconf/pg_hba.conf
     sed -i "s/PG_REPLICATION_NAME/$PG_REPLICATION_NAME/g" /pgconf/pg_hba.conf
     sed -i "s/PG_NETWORK_MASK/$PG_NETWORK_MASK/g" /pgconf/pg_hba.conf
-    
+
+    if [ -f /pgconf/root.crt ] && [ -f /pgconf/server.crt ] && [ -f /pgconf/server.key ]; then
+        sed -i "s/ssl = off/ssl = on/g" /pgconf/postgresql.conf
+        sed -i "s/SSL/ssl/g" /pgconf/pg_hba.conf
+        sed -i "s/CERT/clientcert=1/g" /pgconf/pg_hba.conf
+
+        cp /pgconf/root.crt /pgdata
+        cp /pgconf/server.crt /pgdata
+        cp /pgconf/server.key /pgdata
+    else
+        sed -i "s/SSL//g" /pgconf/pg_hba.conf
+        sed -i "s/CERT//g" /pgconf/pg_hba.conf
+    fi
+
     cp /pgconf/postgresql.conf /pgdata/
     cp /pgconf/pg_hba.conf /pgdata/
+
+    if [ -f /pgdata/server.key ]; then
+        chmod 0600 /pgdata/server.key
+    fi
 
     (crontab -l ; echo "00 06  *   *   0     /usr/bin/pgbackrest --type=full --stanza=main backup") | crontab -
     (crontab -l ; echo "00 06  *   *   1-6   /usr/bin/pgbackrest --type=diff --stanza=main backup") | crontab -

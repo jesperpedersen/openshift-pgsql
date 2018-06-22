@@ -9,6 +9,7 @@ The images makes use of
 * Community provided RPMs through [yum.postgresql.org](https://yum.postgresql.org)
 * Checksum for `PGDATA`
 * SCRAM-SHA256 password encryption
+* SSL support
 * `pg_stat_statements` integration
 * Asynchronous replication, up to 6 slaves
 * Backup using [pgbackrest](https://pgbackrest.org) including Point-in-Time recovery
@@ -16,7 +17,6 @@ The images makes use of
 
 Features that should be added
 
-* SSL support
 * Synchronous replication with `remote_apply`
 * Additional GUCs
 * [pgpool-II 4.0 image](http://www.pgpool.net)

@@ -32,6 +32,18 @@ if [ ! -f /pgdata/PG_VERSION ]; then
         exit 1
     fi
 
+    if [ -f /pgconf/root.crt ] && [ -f /pgconf/postgresql.crt ] && [ -f /pgconf/postgresql.key ]; then
+        mkdir ~/.postgresql
+        cp /pgconf/root.crt ~/.postgresql
+        cp /pgconf/postgresql.crt ~/.postgresql
+        cp /pgconf/postgresql.key ~/.postgresql
+        chmod 0600 ~/.postgresql/postgresql.key
+
+        sed -i "s/SSL/ sslmode=verify-ca/g" /pgconf/recovery.conf
+    else
+        sed -i "s/SSL//g" /pgconf/recovery.conf
+    fi
+
     PGPASSWORD="$PG_REPLICATION_PASSWORD" /usr/pgsql-10/bin/pg_basebackup -X stream --no-password -c fast -h ${PG_MASTER} -U ${PG_REPLICATION_NAME} -D /pgdata
 
     sed -i "s/PG_MASTER/$PG_MASTER/g" /pgconf/recovery.conf

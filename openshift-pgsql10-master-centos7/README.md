@@ -8,7 +8,7 @@ This project contains the PostgreSQL Master image for OpenShift.
 su -
 systemctl start docker
 make build
-docker run -p 5432:5432 -e PG_DATABASE=mydb -e PG_USER_NAME=myuser -e PG_USER_PASSWORD=pass -e PG_REPLICATION_NAME=repl -e PG_REPLICATION_PASSWORD=replpass -e PG_NETWORK_MASK=172.10.0.0/16 openshift-pgsql10-master-centos7
+docker run -p 5432:5432 -e PG_DATABASE=mydb -e PG_USER_NAME=myuser -e PG_USER_PASSWORD=pass -e PG_REPLICATION_NAME=repl -e PG_REPLICATION_PASSWORD=replpass -e PG_NETWORK_MASK=172.10.0.0\\/16 openshift-pgsql10-master-centos7
 ```
 
 ## Configuration
@@ -27,3 +27,11 @@ docker run -p 5432:5432 -e PG_DATABASE=mydb -e PG_USER_NAME=myuser -e PG_USER_PA
 | PG_WORK_MEM | 8 | MB | | `work_mem` setting |
 | PG_MAX_PARALLEL_WORKERS | 8 | | | `max_parallel_workers` setting |
 | PG_EFFECTIVE_CACHE_SIZE | 1 | GB | | `effective_cache_size` setting |
+
+## SSL support
+
+SSL support will be enabled when `/pgconf` contains the files `root.crt`, `server.crt` and `server.key`.
+
+Remember to disable passphase such that the server can boot without a password prompt.
+
+A guide to this can be found [here](https://www.howtoforge.com/postgresql-ssl-certificates).
