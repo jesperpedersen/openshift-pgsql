@@ -35,3 +35,4 @@ SSL support will be enabled when `/pgconf` contains the files `root.crt`, `serve
 Remember to disable passphase such that the server can boot without a password prompt.
 
 A guide to this can be found [here](https://www.howtoforge.com/postgresql-ssl-certificates).
+Test and production environments should **NOT** be using self-signed certificates.
