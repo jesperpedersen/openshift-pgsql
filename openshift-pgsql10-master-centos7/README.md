@@ -28,6 +28,15 @@ docker run -p 5432:5432 -e PG_DATABASE=mydb -e PG_USER_NAME=myuser -e PG_USER_PA
 | PG_MAX_PARALLEL_WORKERS | 8 | | | `max_parallel_workers` setting |
 | PG_EFFECTIVE_CACHE_SIZE | 1 | GB | | `effective_cache_size` setting |
 
+## Volumes
+
+| Name | Description |
+|------|-------------|
+| `/pgconf` | PostgreSQL configuration template |
+| `/pgdata` | PostgreSQL data directory |
+| `/pgwal` | PostgreSQL Write-Ahead Log (WAL) |
+| `/pgbackup` | PostgreSQL backup volume |
+
 ## SSL support
 
 SSL support will be enabled when `/pgconf` contains the files `root.crt`, `server.crt` and `server.key`.
