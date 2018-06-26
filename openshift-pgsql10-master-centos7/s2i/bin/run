@@ -27,6 +27,7 @@ if [ ! -f /pgdata/PG_VERSION ]; then
     export PG_WORK_MEM=${PG_WORK_MEM:-8}
     export PG_MAX_PARALLEL_WORKERS=${PG_MAX_PARALLEL_WORKERS:-8}
     export PG_EFFECTIVE_CACHE_SIZE=${PG_EFFECTIVE_CACHE_SIZE:-1}
+    export PG_MAX_WAL_SIZE=${PG_MAX_WAL_SIZE:-1}
 
     export PG_DATABASE=${PG_DATABASE}
     export PG_DATABASE_ENCODING=${PG_DATABASE_ENCODING:-UTF8}
@@ -51,6 +52,7 @@ if [ ! -f /pgdata/PG_VERSION ]; then
     sed -i "s/PG_WORK_MEM/$PG_WORK_MEM/g" /pgconf/postgresql.conf
     sed -i "s/PG_MAX_PARALLEL_WORKERS/$PG_MAX_PARALLEL_WORKERS/g" /pgconf/postgresql.conf
     sed -i "s/PG_EFFECTIVE_CACHE_SIZE/$PG_EFFECTIVE_CACHE_SIZE/g" /pgconf/postgresql.conf
+    sed -i "s/PG_MAX_WAL_SIZE/$PG_MAX_WAL_SIZE/g" /pgconf/postgresql.conf
 
     sed -i "s/PG_DATABASE/$PG_DATABASE/g" /pgconf/pg_hba.conf
     sed -i "s/PG_USER_NAME/$PG_USER_NAME/g" /pgconf/pg_hba.conf

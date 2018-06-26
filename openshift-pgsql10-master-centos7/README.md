@@ -27,6 +27,7 @@ docker run -p 5432:5432 -e PG_DATABASE=mydb -e PG_USER_NAME=myuser -e PG_USER_PA
 | PG_WORK_MEM | 8 | MB | | `work_mem` setting |
 | PG_MAX_PARALLEL_WORKERS | 8 | | | `max_parallel_workers` setting |
 | PG_EFFECTIVE_CACHE_SIZE | 1 | GB | | `effective_cache_size` setting |
+| PG_MAX_WAL_SIZE | 1 | GB | | `max_wal_size` setting |
 
 ## Volumes
 
