@@ -33,7 +33,7 @@ docker run -p 5432:5432 -e PG_DATABASE=mydb -e PG_USER_NAME=myuser -e PG_USER_PA
 
 | Name | Description |
 |------|-------------|
-| `/pgconf` | PostgreSQL configuration template |
+| `/pgconf` | Volume for SSL configuration |
 | `/pgdata` | PostgreSQL data directory |
 | `/pgwal` | PostgreSQL Write-Ahead Log (WAL) |
 | `/pgbackup` | PostgreSQL backup volume |

@@ -26,8 +26,8 @@ if [ ! -f /pgdata/PG_VERSION ]; then
     export PG_REPLICATION_NAME=${PG_REPLICATION_NAME}
     export PG_REPLICATION_PASSWORD=${PG_REPLICATION_PASSWORD}
 
-    if [ [-z "${PG_MASTER}"] ||
-         [-z "${PG_REPLICATION_NAME}"] || [-z "${PG_REPLICATION_PASSWORD}"] ]; then
+    if [ -z "${PG_MASTER}" ] ||
+       [ -z "${PG_REPLICATION_NAME}" ] || [ -z "${PG_REPLICATION_PASSWORD}" ]; then
         echo "PG_MASTER, PG_REPLICATION_NAME and PG_REPLICATION_PASSWORD needs to be defined."
         exit 1
     fi
@@ -39,18 +39,18 @@ if [ ! -f /pgdata/PG_VERSION ]; then
         cp /pgconf/postgresql.key ~/.postgresql
         chmod 0600 ~/.postgresql/postgresql.key
 
-        sed -i "s/SSL/ sslmode=verify-ca/g" /pgconf/recovery.conf
+        sed -i "s/SSL/ sslmode=verify-ca/g" /conf/recovery.conf
     else
-        sed -i "s/SSL//g" /pgconf/recovery.conf
+        sed -i "s/SSL//g" /conf/recovery.conf
     fi
 
     PGPASSWORD="$PG_REPLICATION_PASSWORD" /usr/pgsql-10/bin/pg_basebackup -X stream --no-password -c fast -h ${PG_MASTER} -U ${PG_REPLICATION_NAME} -D /pgdata
 
-    sed -i "s/PG_MASTER/$PG_MASTER/g" /pgconf/recovery.conf
-    sed -i "s/PG_REPLICATION_NAME/$PG_REPLICATION_NAME/g" /pgconf/recovery.conf
-    sed -i "s/PG_REPLICATION_PASSWORD/$PG_REPLICATION_PASSWORD/g" /pgconf/recovery.conf
+    sed -i "s/PG_MASTER/$PG_MASTER/g" /conf/recovery.conf
+    sed -i "s/PG_REPLICATION_NAME/$PG_REPLICATION_NAME/g" /conf/recovery.conf
+    sed -i "s/PG_REPLICATION_PASSWORD/$PG_REPLICATION_PASSWORD/g" /conf/recovery.conf
 
-    cp /pgconf/recovery.conf /pgdata/
+    cp /conf/recovery.conf /pgdata/
 
     (crontab -l ; echo "00 06  *   *   0     /usr/bin/pgbackrest --type=full --stanza=main backup") | crontab -
     (crontab -l ; echo "00 06  *   *   1-6   /usr/bin/pgbackrest --type=diff --stanza=main backup") | crontab -

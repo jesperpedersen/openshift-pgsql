@@ -45,10 +45,10 @@ RUN rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.
 
 COPY ./s2i/bin/ /usr/libexec/s2i
 
-RUN mkdir -p /pgconf /pgdata /pgwal /pgbackup
-COPY conf/* /pgconf/
-RUN chown -R postgres:postgres /pgconf /pgdata /pgwal /pgbackup
-RUN chmod 700 /pgconf /pgdata /pgwal /pgbackup
+RUN mkdir -p /conf /pgconf /pgdata /pgwal /pgbackup
+COPY conf/* /conf/
+RUN chown -R postgres:postgres /conf /pgconf /pgdata /pgwal /pgbackup
+RUN chmod 700 /conf /pgconf /pgdata /pgwal /pgbackup
 
 COPY conf/pgbackrest.conf /etc/
 RUN chown -R postgres:postgres /var/log/pgbackrest

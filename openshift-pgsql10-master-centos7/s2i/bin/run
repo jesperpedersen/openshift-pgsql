@@ -37,43 +37,43 @@ if [ ! -f /pgdata/PG_VERSION ]; then
     export PG_REPLICATION_PASSWORD=${PG_REPLICATION_PASSWORD}
     export PG_NETWORK_MASK=${PG_NETWORK_MASK}
 
-    if [ [-z "${PG_DATABASE}"] ||
-         [-z "${PG_USER_NAME}"] || [-z "${PG_USER_PASSWORD}"] ||
-         [-z "${PG_REPLICATION_NAME}"] || [-z "${PG_REPLICATION_PASSWORD}"] ||
-         [-z "${PG_NETWORK_MASK}"] ]; then
+    if [ -z "${PG_DATABASE}" ] ||
+       [ -z "${PG_USER_NAME}" ] || [ -z "${PG_USER_PASSWORD}" ] ||
+       [ -z "${PG_REPLICATION_NAME}" ] || [ -z "${PG_REPLICATION_PASSWORD}" ] ||
+       [ -z "${PG_NETWORK_MASK}" ]; then
         echo "PG_DATABASE, PG_USER_NAME, PG_USER_PASSWORD, PG_REPLICATION_NAME, PG_REPLICATION_PASSWORD and PG_NETWORK_MASK needs to be defined."
         exit 1
     fi
     
     /usr/pgsql-10/bin/initdb -k -X /pgwal/ /pgdata/
 
-    sed -i "s/PG_MAX_CONNECTIONS/$PG_MAX_CONNECTIONS/g" /pgconf/postgresql.conf
-    sed -i "s/PG_SHARED_BUFFERS/$PG_SHARED_BUFFERS/g" /pgconf/postgresql.conf
-    sed -i "s/PG_WORK_MEM/$PG_WORK_MEM/g" /pgconf/postgresql.conf
-    sed -i "s/PG_MAX_PARALLEL_WORKERS/$PG_MAX_PARALLEL_WORKERS/g" /pgconf/postgresql.conf
-    sed -i "s/PG_EFFECTIVE_CACHE_SIZE/$PG_EFFECTIVE_CACHE_SIZE/g" /pgconf/postgresql.conf
-    sed -i "s/PG_MAX_WAL_SIZE/$PG_MAX_WAL_SIZE/g" /pgconf/postgresql.conf
+    sed -i "s/PG_MAX_CONNECTIONS/$PG_MAX_CONNECTIONS/g" /conf/postgresql.conf
+    sed -i "s/PG_SHARED_BUFFERS/$PG_SHARED_BUFFERS/g" /conf/postgresql.conf
+    sed -i "s/PG_WORK_MEM/$PG_WORK_MEM/g" /conf/postgresql.conf
+    sed -i "s/PG_MAX_PARALLEL_WORKERS/$PG_MAX_PARALLEL_WORKERS/g" /conf/postgresql.conf
+    sed -i "s/PG_EFFECTIVE_CACHE_SIZE/$PG_EFFECTIVE_CACHE_SIZE/g" /conf/postgresql.conf
+    sed -i "s/PG_MAX_WAL_SIZE/$PG_MAX_WAL_SIZE/g" /conf/postgresql.conf
 
-    sed -i "s/PG_DATABASE/$PG_DATABASE/g" /pgconf/pg_hba.conf
-    sed -i "s/PG_USER_NAME/$PG_USER_NAME/g" /pgconf/pg_hba.conf
-    sed -i "s/PG_REPLICATION_NAME/$PG_REPLICATION_NAME/g" /pgconf/pg_hba.conf
-    sed -i "s/PG_NETWORK_MASK/$PG_NETWORK_MASK/g" /pgconf/pg_hba.conf
+    sed -i "s/PG_DATABASE/$PG_DATABASE/g" /conf/pg_hba.conf
+    sed -i "s/PG_USER_NAME/$PG_USER_NAME/g" /conf/pg_hba.conf
+    sed -i "s/PG_REPLICATION_NAME/$PG_REPLICATION_NAME/g" /conf/pg_hba.conf
+    sed -i "s/PG_NETWORK_MASK/$PG_NETWORK_MASK/g" /conf/pg_hba.conf
 
     if [ -f /pgconf/root.crt ] && [ -f /pgconf/server.crt ] && [ -f /pgconf/server.key ]; then
-        sed -i "s/ssl = off/ssl = on/g" /pgconf/postgresql.conf
-        sed -i "s/SSL/ssl/g" /pgconf/pg_hba.conf
-        sed -i "s/CERT/clientcert=1/g" /pgconf/pg_hba.conf
+        sed -i "s/ssl = off/ssl = on/g" /conf/postgresql.conf
+        sed -i "s/SSL/ssl/g" /conf/pg_hba.conf
+        sed -i "s/CERT/clientcert=1/g" /conf/pg_hba.conf
 
         cp /pgconf/root.crt /pgdata
         cp /pgconf/server.crt /pgdata
         cp /pgconf/server.key /pgdata
     else
-        sed -i "s/SSL//g" /pgconf/pg_hba.conf
-        sed -i "s/CERT//g" /pgconf/pg_hba.conf
+        sed -i "s/SSL//g" /conf/pg_hba.conf
+        sed -i "s/CERT//g" /conf/pg_hba.conf
     fi
 
-    cp /pgconf/postgresql.conf /pgdata/
-    cp /pgconf/pg_hba.conf /pgdata/
+    cp /conf/postgresql.conf /pgdata/
+    cp /conf/pg_hba.conf /pgdata/
 
     if [ -f /pgdata/server.key ]; then
         chmod 0600 /pgdata/server.key
@@ -82,15 +82,15 @@ if [ ! -f /pgdata/PG_VERSION ]; then
     (crontab -l ; echo "00 06  *   *   0     /usr/bin/pgbackrest --type=full --stanza=main backup") | crontab -
     (crontab -l ; echo "00 06  *   *   1-6   /usr/bin/pgbackrest --type=diff --stanza=main backup") | crontab -
     
-    sed -i "s/PG_DATABASE_ENCODING/$PG_DATABASE_ENCODING/g" /pgconf/setup.sql
-    sed -i "s/PG_DATABASE/$PG_DATABASE/g" /pgconf/setup.sql
-    sed -i "s/PG_USER_NAME/$PG_USER_NAME/g" /pgconf/setup.sql
-    sed -i "s/PG_USER_PASSWORD/$PG_USER_PASSWORD/g" /pgconf/setup.sql
-    sed -i "s/PG_REPLICATION_NAME/$PG_REPLICATION_NAME/g" /pgconf/setup.sql
-    sed -i "s/PG_REPLICATION_PASSWORD/$PG_REPLICATION_PASSWORD/g" /pgconf/setup.sql
+    sed -i "s/PG_DATABASE_ENCODING/$PG_DATABASE_ENCODING/g" /conf/setup.sql
+    sed -i "s/PG_DATABASE/$PG_DATABASE/g" /conf/setup.sql
+    sed -i "s/PG_USER_NAME/$PG_USER_NAME/g" /conf/setup.sql
+    sed -i "s/PG_USER_PASSWORD/$PG_USER_PASSWORD/g" /conf/setup.sql
+    sed -i "s/PG_REPLICATION_NAME/$PG_REPLICATION_NAME/g" /conf/setup.sql
+    sed -i "s/PG_REPLICATION_PASSWORD/$PG_REPLICATION_PASSWORD/g" /conf/setup.sql
 
     /usr/pgsql-10/bin/pg_ctl -D /pgdata/ start
-    /usr/pgsql-10/bin/psql -q -f /pgconf/setup.sql postgres
+    /usr/pgsql-10/bin/psql -q -f /conf/setup.sql postgres
     /usr/bin/pgbackrest --stanza=main stanza-create
     /usr/pgsql-10/bin/pg_ctl -D /pgdata/ stop
 fi

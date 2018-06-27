@@ -13,7 +13,7 @@ The images makes use of
 * `pg_stat_statements` integration
 * Asynchronous replication, up to 6 slaves
 * Backup using [pgbackrest](https://pgbackrest.org) including Point-in-Time recovery
-* Volumes for `/pgdata`, `/pgwal` and `/pgbackup`
+* Volumes for `/pgconf`, `/pgdata`, `/pgwal` and `/pgbackup`
 
 Features that should be added
 
