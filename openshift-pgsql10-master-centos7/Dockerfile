@@ -53,7 +53,7 @@ RUN chmod 700 /conf /pgconf /pgdata /pgwal /pgbackup
 COPY conf/pgbackrest.conf /etc/
 RUN chown -R postgres:postgres /var/log/pgbackrest
 
-VOLUME ["/pgconf", "/pgdata", "/pgwal, "/pgbackup"]
+VOLUME ["/pgconf", "/pgdata", "/pgwal", "/pgbackup"]
 
 EXPOSE 5432
 
