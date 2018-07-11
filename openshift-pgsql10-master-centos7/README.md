@@ -6,10 +6,33 @@ This project contains the PostgreSQL Master image for OpenShift.
 
 ```bash
 su -
+
+# Start Docker
 systemctl start docker
-make build
-docker run -p 5432:5432 -e PG_DATABASE=mydb -e PG_USER_NAME=myuser -e PG_USER_PASSWORD=pass -e PG_REPLICATION_NAME=repl -e PG_REPLICATION_PASSWORD=replpass -e PG_NETWORK_MASK=172.10.0.0\\/16 openshift-pgsql10-master-centos7
+
+# Start minishift, and note the URL for the web console
+minishift start
+
+# Set the Docker environment variables
+eval $(minishift docker-env)
+
+# Login into OpenShift (developer / whatever)
+oc login
+
+# Login into Docker registry
+docker login -u developer -p $(oc whoami -t) $(minishift openshift registry)
+
+# Make the container
+make
+
+# Create a Docker tag
+docker tag openshift-pgsql10-master-centos7 $(minishift openshift registry)/myproject/openshift-pgsql10-master-centos7
+
+# Push the image to the registry
+docker push $(minishift openshift registry)/myproject/openshift-pgsql10-master-centos7
 ```
+
+The image can be deployed through the [minishift](https://github.com/minishift/minishift/releases) web console.
 
 ## Configuration
 
@@ -38,9 +61,11 @@ docker run -p 5432:5432 -e PG_DATABASE=mydb -e PG_USER_NAME=myuser -e PG_USER_PA
 | `/pgwal` | PostgreSQL Write-Ahead Log (WAL) |
 | `/pgbackup` | PostgreSQL backup volume |
 
+The data of each of these volumes is located within their `data` directory.
+
 ## SSL support
 
-SSL support will be enabled when `/pgconf` contains the files `root.crt`, `server.crt` and `server.key`.
+SSL support will be enabled when `/pgconf/data` contains the files `root.crt`, `server.crt` and `server.key`.
 
 Remember to disable passphase such that the server can boot without a password prompt.
 

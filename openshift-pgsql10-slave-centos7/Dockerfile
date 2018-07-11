@@ -20,7 +20,7 @@
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 # openshift-pgsql10-slave-centos7
-FROM centos:centos7
+FROM centos/s2i-core-centos7
 
 LABEL maintainer="Jesper Pedersen <jesper.pedersen@redhat.com>"
 
@@ -32,31 +32,43 @@ LABEL summary="PostgreSQL 10 Slave" \
       io.openshift.tags="postgresql,postgres,database" \
       io.openshift.s2i.scripts-url="image:///usr/libexec/s2i"
 
-# COPY conf/licenses /licenses
-
 ENV PGVERSION="10"
 ENV PGROOT="/usr/pgsql-${PGVERSION}"
+ENV APP_DATA="/opt/app-root"
+
+# Create root/licenses
+COPY root/ /
 
 RUN rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
  && rpm -Uvh https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-7-x86_64/pgdg-centos10-10-2.noarch.rpm \
  && yum -y update \
- && yum -y install postgresql10 postgresql10-server postgresql10-contrib postgresql10-libs pgbackrest crontabs \
+ && yum -y install postgresql10 postgresql10-server postgresql10-contrib postgresql10-libs pgbackrest crontabs nss_wrapper gettext bind-utils \
  && yum -y clean all
 
 COPY ./s2i/bin/ /usr/libexec/s2i
 
 RUN mkdir -p /conf /pgconf /pgdata /pgwal /pgbackup
+
 COPY conf/* /conf/
-RUN chown -R postgres:postgres /conf /pgconf /pgdata /pgwal /pgbackup
-RUN chmod 700 /conf /pgconf /pgdata /pgwal /pgbackup
+
+RUN /usr/libexec/fix-permissions /conf \
+ && /usr/libexec/fix-permissions /pgconf \
+ && /usr/libexec/fix-permissions /pgdata \
+ && /usr/libexec/fix-permissions /pgwal \
+ && /usr/libexec/fix-permissions /pgbackup \
+ && /usr/libexec/fix-permissions /var/run/postgresql
 
 COPY conf/pgbackrest.conf /etc/
-RUN chown -R postgres:postgres /var/log/pgbackrest
+RUN /usr/libexec/fix-permissions /var/log/pgbackrest
 
 VOLUME ["/pgconf", "/pgdata", "/pgwal", "/pgbackup"]
 
 EXPOSE 5432
 
+RUN /usr/libexec/fix-permissions ${APP_DATA}
+RUN usermod -a -G root postgres
+
 USER 26
 
+ENTRYPOINT ["container-entrypoint"]
 CMD ["/usr/libexec/s2i/run"]

@@ -4,7 +4,7 @@ This repository contains [PostgreSQL](https://www.postgresql.org) images for [Op
 
 The images makes use of
 
-* [CentOS](https://www.centos.org) 7
+* [OpenShift S2I CentOS](https://hub.docker.com/r/centos/s2i-core-centos7/) 7
 * [PostgreSQL](https://www.postgresql.org) 10.x
 * Community provided RPMs through [yum.postgresql.org](https://yum.postgresql.org)
 * Checksum for `PGDATA`

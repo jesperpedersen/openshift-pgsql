@@ -6,9 +6,27 @@ This project contains the PostgreSQL Slave image for OpenShift.
 
 ```bash
 su -
-systemctl start docker
-make build
-docker run -p 5433:5432 -e PG_MASTER=172.12.0.2 -e PG_REPLICATION_NAME=repl -e PG_REPLICATION_PASSWORD=replpass openshift-pgsql10-slave-centos7
+
+# Start minishift, and note the URL for the web console
+minishift start
+
+# Set the Docker environment variables
+eval $(minishift docker-env)
+
+# Login into OpenShift (developer / whatever)
+oc login
+
+# Login into Docker registry
+docker login -u developer -p $(oc whoami -t) $(minishift openshift registry)
+
+# Make the container
+make
+
+# Create a Docker tag
+docker tag openshift-pgsql10-slave-centos7 $(minishift openshift registry)/myproject/openshift-pgsql10-slave-centos7
+
+# Push the image to the registry
+docker push $(minishift openshift registry)/myproject/openshift-pgsql10-slave-centos7
 ```
 
 ## Configuration
@@ -21,7 +39,7 @@ docker run -p 5433:5432 -e PG_MASTER=172.12.0.2 -e PG_REPLICATION_NAME=repl -e P
 
 ## SSL support
 
-SSL support will be enabled when `/pgconf` contains the files `root.crt`, `postgresql.crt` and `postgresql.key`.
+SSL support will be enabled when `/pgconf/data` contains the files `root.crt`, `postgresql.crt` and `postgresql.key`.
 
 Remember to disable passphase such that the server can boot without a password prompt.
 
