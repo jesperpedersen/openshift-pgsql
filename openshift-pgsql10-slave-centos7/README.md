@@ -29,6 +29,9 @@ docker tag openshift-pgsql10-slave-centos7 $(minishift openshift registry)/mypro
 docker push $(minishift openshift registry)/myproject/openshift-pgsql10-slave-centos7
 ```
 
+The image can be deployed through the [minishift](https://github.com/minishift/minishift/releases) web console,
+using the `openshift-pgsql10-slave-centos7-template.json` template.
+
 ## Configuration
 
 | Property | Default | Unit | Required | Description |

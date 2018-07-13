@@ -1,0 +1,339 @@
+{
+   "kind": "Template",
+   "apiVersion": "v1",
+   "metadata": {
+      "name": "openshift-pgsql10-slave",
+      "annotations": {
+         "iconClass": "icon-postgresql",
+         "description": "Template for a PostgreSQL 10 slave node built using STI",
+         "tags": "database,postgresql"
+      }
+   },
+   "message": "The following service(s) have been created in your project: openshift-pgsql10-slave.\n\n  Replication username: ${PG_REPLICATION_NAME}\n  Replication password: ${PG_REPLICATION_PASSWORD}\n  Network mask: ${PG_NETWORK_MASK}\n  Connection URL: postgresql://openshift-pgsql10-slave:5432/\n\nFor more information about using this template, including OpenShift considerations,\nsee https://github.com/jesperpedersen/openshift-pgsql/",
+   "labels": {
+      "application": "openshift-pgsql10",
+      "createdBy": "template-openshift-pgsql10-slave"
+   },
+   "parameters": [
+      {
+         "description": "The IP of the PostgreSQL master node",
+         "name": "PG_MASTER"
+      },
+      {
+         "description": "The replication user",
+         "name": "PG_REPLICATION_NAME"
+      },
+      {
+         "description": "The password for the replication user",
+         "name": "PG_REPLICATION_PASSWORD"
+      },
+      {
+         "description": "Size of /pgbackup partition (GB)",
+         "name": "PG_PGBACKUP",
+         "value": "10"
+      },
+      {
+         "description": "Size of /pgconf partition (GB)",
+         "name": "PG_PGCONF",
+         "value": "1"
+      },
+      {
+         "description": "Size of /pgdata partition (GB)",
+         "name": "PG_PGDATA",
+         "value": "10"
+      },
+      {
+         "description": "Size of /pgwal partition (GB)",
+         "name": "PG_PGWAL",
+         "value": "2"
+      }
+   ],
+   "objects": [
+      {
+         "kind": "CronJob",
+         "apiVersion": "batch/v1beta1",
+         "metadata": {
+            "name": "openshift-pgsql10-slave-backup-full"
+         },
+         "spec": {
+            "schedule": "00 06  *   *   0",
+            "jobTemplate": {             
+               "spec": {
+                  "template": {
+                     "metadata": {
+                        "labels": {          
+                            "parent": "openshift-pgsql10-slave-backup-full"
+                        }
+                     },
+                     "spec": {
+                        "containers": [
+                           {
+                              "name": "openshift-pgsql10-slave",
+                              "image": "openshift-pgsql10-slave",
+                              "command": [ "/usr/bin/pgbackrest",  "--type=full", "--stanza=main", "backup" ]
+                           }
+                        ],
+                        "restartPolicy": "OnFailure"
+                     }
+                  }
+               }
+            }
+         }
+       },
+       {
+         "kind": "CronJob",
+         "apiVersion": "batch/v1beta1",
+         "metadata": {
+            "name": "openshift-pgsql10-slave-backup-diff"
+         },
+         "spec": {
+            "schedule": "00 06  *   *   1-6",
+            "jobTemplate": {             
+               "spec": {
+                  "template": {
+                     "metadata": {
+                        "labels": {          
+                            "parent": "openshift-pgsql10-slave-backup-diff"
+                        }
+                     },
+                     "spec": {
+                        "containers": [
+                           {
+                              "name": "openshift-pgsql10-slave",
+                              "image": "openshift-pgsql10-slave",
+                              "command": [ "/usr/bin/pgbackrest",  "--type=diff", "--stanza=main", "backup" ]
+                           }
+                        ],
+                        "restartPolicy": "OnFailure"
+                     }
+                  }
+               }
+            }
+         }
+       },
+       {
+         "kind": "PersistentVolumeClaim",
+         "apiVersion": "v1",
+         "metadata": {
+            "name": "openshift-pgsql10-slave-pgbackup"
+         },
+         "spec": {
+            "accessModes": [
+               "ReadWriteOnce"
+            ],
+            "resources": {
+               "requests": {
+                  "storage": "${PG_PGBACKUP}Gi"
+               }
+            }
+         }
+      },
+      {
+         "kind": "PersistentVolumeClaim",
+         "apiVersion": "v1",
+         "metadata": {
+            "name": "openshift-pgsql10-slave-pgconf"
+         },
+         "spec": {
+            "accessModes": [
+               "ReadWriteOnce"
+            ],
+            "resources": {
+               "requests": {
+                  "storage": "${PG_PGCONF}Gi"
+               }
+            }
+         }
+      },
+      {
+         "kind": "PersistentVolumeClaim",
+         "apiVersion": "v1",
+         "metadata": {
+            "name": "openshift-pgsql10-slave-pgdata"
+         },
+         "spec": {
+            "accessModes": [
+               "ReadWriteOnce"
+            ],
+            "resources": {
+               "requests": {
+                  "storage": "${PG_PGDATA}Gi"
+               }
+            }
+         }
+      },
+      {
+         "kind": "PersistentVolumeClaim",
+         "apiVersion": "v1",
+         "metadata": {
+            "name": "openshift-pgsql10-slave-pgwal"
+         },
+         "spec": {
+            "accessModes": [
+               "ReadWriteOnce"
+            ],
+            "resources": {
+               "requests": {
+                  "storage": "${PG_PGWAL}Gi"
+               }
+            }
+         }
+      },
+      {
+         "kind": "DeploymentConfig",
+         "apiVersion": "v1",
+         "metadata": {
+            "name": "openshift-pgsql10-slave"
+         },
+         "spec": {
+            "strategy": {
+               "type": "Recreate"
+            },
+            "triggers": [
+               {
+                  "type": "ImageChange",
+                  "imageChangeParams": {
+                     "automatic": true,
+                     "containerNames": [
+                        "openshift-pgsql10-slave"
+                     ],
+                     "from": {
+                        "kind": "ImageStreamTag",
+                        "namespace": "myproject",
+                        "name": "openshift-pgsql10-slave-centos7:latest"
+                     }
+                  }
+               },
+               {
+                  "type": "ConfigChange"
+               }
+            ],
+            "replicas": 1,
+            "selector": {
+               "deploymentConfig": "openshift-pgsql10-slave"
+            },
+            "template": {
+               "metadata": {
+                  "name": "openshift-pgsql10-slave",
+                  "labels": {
+                     "deploymentConfig": "openshift-pgsql10-slave"
+                  }
+               },
+               "spec": {
+                  "volumes": [
+                     {
+                        "name": "openshift-pgsql10-slave-pgbackup",
+                        "persistentVolumeClaim": {
+                           "claimName": "openshift-pgsql10-slave-pgbackup"
+                        }
+                     },
+                     {
+                        "name": "openshift-pgsql10-slave-pgconf",
+                        "persistentVolumeClaim": {
+                           "claimName": "openshift-pgsql10-slave-pgconf"
+                        }
+                     },
+                     {
+                        "name": "openshift-pgsql10-slave-pgdata",
+                        "persistentVolumeClaim": {
+                           "claimName": "openshift-pgsql10-slave-pgdata"
+                        }
+                     },
+                     {
+                        "name": "openshift-pgsql10-slave-pgwal",
+                        "persistentVolumeClaim": {
+                           "claimName": "openshift-pgsql10-slave-pgwal"
+                        }
+                     }
+                  ],
+                  "containers": [
+                     {
+                        "name": "openshift-pgsql10-slave",
+                        "image": "openshift-pgsql10-slave",
+                        "ports": [
+                           {
+                              "containerPort": 5432,
+                              "protocol": "TCP"
+                           }
+                        ],
+                        "readinessProbe": {
+                           "timeoutSeconds": 1,
+                           "initialDelaySeconds": 5,
+                           "exec": {
+                              "command": [ "/usr/libexec/check-container" ]
+                           }
+                        },
+                        "livenessProbe": {
+                           "timeoutSeconds": 10,
+                           "initialDelaySeconds": 120,
+                           "exec": {
+                              "command": [ "/usr/libexec/check-container", "--live" ]
+                           }
+                        },
+                        "env": [
+                           {
+                              "name": "PG_MASTER",
+                              "value": "${PG_MASTER}"
+                           },
+                           {
+                              "name": "PG_REPLICATION_NAME",
+                              "value": "${PG_REPLICATION_NAME}"
+                           },
+                           {
+                              "name": "PG_REPLICATION_PASSWORD",
+                              "value": "${PG_REPLICATION_PASSWORD}"
+                           }
+                        ],
+                        "resources": {},
+                        "volumeMounts": [
+                           {
+                              "name": "openshift-pgsql10-slave-pgbackup",
+                              "mountPath": "/pgbackup"
+                           },
+                           {
+                              "name": "openshift-pgsql10-slave-pgconf",
+                              "mountPath": "/pgconf"
+                           },
+                           {
+                              "name": "openshift-pgsql10-slave-pgdata",
+                              "mountPath": "/pgdata"
+                           },
+                           {
+                              "name": "openshift-pgsql10-slave-pgwal",
+                              "mountPath": "/pgwal"
+                           }
+                        ],
+                        "terminationMessagePath": "/dev/termination-log",
+                        "imagePullPolicy": "IfNotPresent",
+                        "securityContext": {
+                           "capabilities": {},
+                           "privileged": false
+                        }
+                     }
+                  ],
+                  "restartPolicy": "Always",
+                  "dnsPolicy": "ClusterFirst"
+               }
+            }
+         }
+      },
+      {
+         "kind": "Service",
+         "apiVersion": "v1",
+         "metadata": {
+            "name": "openshift-pgsql10-slave"
+         },
+         "spec": {
+            "ports": [
+               {
+                  "port": 5432,
+                  "targetPort": 5432
+               }
+            ],
+            "selector": {
+               "deploymentConfig": "openshift-pgsql10-slave"
+            }
+         }
+      }
+   ]
+}

@@ -147,9 +147,6 @@ if [ ! -f /pgdata/data/PG_VERSION ]; then
 
     mkdir /pgbackup/data
 
-    # (crontab -l ; echo "00 06  *   *   0     /usr/bin/pgbackrest --type=full --stanza=main backup") | crontab -
-    # (crontab -l ; echo "00 06  *   *   1-6   /usr/bin/pgbackrest --type=diff --stanza=main backup") | crontab -
-    
     sed -i "s/PG_DATABASE_ENCODING/$PG_DATABASE_ENCODING/g" /conf/setup.sql
     sed -i "s/PG_DATABASE/$PG_DATABASE/g" /conf/setup.sql
     sed -i "s/PG_USER_NAME/$PG_USER_NAME/g" /conf/setup.sql

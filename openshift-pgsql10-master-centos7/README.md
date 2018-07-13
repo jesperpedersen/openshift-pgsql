@@ -32,7 +32,8 @@ docker tag openshift-pgsql10-master-centos7 $(minishift openshift registry)/mypr
 docker push $(minishift openshift registry)/myproject/openshift-pgsql10-master-centos7
 ```
 
-The image can be deployed through the [minishift](https://github.com/minishift/minishift/releases) web console.
+The image can be deployed through the [minishift](https://github.com/minishift/minishift/releases) web console,
+using the `openshift-pgsql10-master-centos7-template.json` template.
 
 ## Configuration
 

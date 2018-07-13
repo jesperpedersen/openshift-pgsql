@@ -94,9 +94,6 @@ if [ ! -f /pgdata/data/PG_VERSION ]; then
 
     mkdir /pgbackup/data/
 
-    # (crontab -l ; echo "00 06  *   *   0     /usr/bin/pgbackrest --type=full --stanza=main backup") | crontab -
-    # (crontab -l ; echo "00 06  *   *   1-6   /usr/bin/pgbackrest --type=diff --stanza=main backup") | crontab -
-
     /usr/pgsql-10/bin/pg_ctl -D /pgdata/data/ start
     /usr/bin/pgbackrest --stanza=main stanza-create
     /usr/pgsql-10/bin/pg_ctl -D /pgdata/data/ stop
