@@ -106,6 +106,20 @@
    ],
    "objects": [
       {
+        "kind": "Secret",
+        "apiVersion": "v1",
+        "metadata": {
+          "name": "openshift-pgsql10-master-secret",
+        },
+        "stringData" : {
+          "database-db" : "${PG_DATABASE}",
+          "database-username" : "${PG_USER_NAME}",
+          "database-username-password" : "${PG_USER_PASSWORD}",
+          "database-replication" : "${PG_REPLICATION_NAME}",
+          "database-replication-password" : "${PG_REPLICATION_PASSWORD}"
+        }
+      },
+      {
          "kind": "CronJob",
          "apiVersion": "batch/v1beta1",
          "metadata": {
@@ -329,23 +343,48 @@
                         "env": [
                            {
                               "name": "PG_DATABASE",
-                              "value": "${PG_DATABASE}"
+                              "valueFrom": {
+                                "secretKeyRef" : {
+                                  "name" : "openshift-pgsql10-master-secret",
+                                  "key" : "database-db"
+                                }
+                              }
                            },
                            {
                               "name": "PG_USER_NAME",
-                              "value": "${PG_USER_NAME}"
+                              "valueFrom": {
+                                "secretKeyRef" : {
+                                  "name" : "openshift-pgsql10-master-secret",
+                                  "key" : "database-username"
+                                }
+                              }
                            },
                            {
                               "name": "PG_USER_PASSWORD",
-                              "value": "${PG_USER_PASSWORD}"
+                              "valueFrom": {
+                                "secretKeyRef" : {
+                                  "name" : "openshift-pgsql10-master-secret",
+                                  "key" : "database-username-password"
+                                }
+                              }
                            },
                            {
                               "name": "PG_REPLICATION_NAME",
-                              "value": "${PG_REPLICATION_NAME}"
+                              "valueFrom": {
+                                "secretKeyRef" : {
+                                  "name" : "openshift-pgsql10-master-secret",
+                                  "key" : "database-replication"
+                                }
+                              }
                            },
                            {
                               "name": "PG_REPLICATION_PASSWORD",
-                              "value": "${PG_REPLICATION_PASSWORD}"
+                              "valueFrom": {
+                                "secretKeyRef" : {
+                                  "name" : "openshift-pgsql10-master-secret",
+                                  "key" : "database-replication-password"
+                                }
+                              }
                            },
                            {
                               "name": "PG_NETWORK_MASK",
