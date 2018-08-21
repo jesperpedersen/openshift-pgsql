@@ -46,6 +46,12 @@ Optional environment variables:
   PG_MAX_PARALLEL_WORKERS ($PG_MAX_PARALLEL_WORKERS) (default: 8) (regex: '$REGEX_NUMBER')
   PG_EFFECTIVE_CACHE_SIZE ($PG_EFFECTIVE_CACHE_SIZE) (default: 1 GB) (regex: '$REGEX_NUMBER')
   PG_MAX_WAL_SIZE ($PG_MAX_WAL_SIZE) (default: 1 GB) (regex: '$REGEX_NUMBER')
+  PG_REPLICA1 ($PG_REPLICA1) (default: replica1)
+  PG_REPLICA2 ($PG_REPLICA2) (default: replica2)
+  PG_REPLICA3 ($PG_REPLICA3) (default: replica3)
+  PG_REPLICA4 ($PG_REPLICA4) (default: replica4)
+  PG_REPLICA5 ($PG_REPLICA5) (default: replica5)
+  PG_REPLICA6 ($PG_REPLICA6) (default: replica6)
 
 For more information visit https://github.com/jesperpedersen/openshift-pgsql
 EOF

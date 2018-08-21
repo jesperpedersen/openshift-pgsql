@@ -33,8 +33,11 @@ function usage() {
   cat >&2 <<EOF
 Required environment variables:
   PG_MASTER ($PG_MASTER)
+  PG_DATABASE ($PG_DATABASE) (regex: '$REGEX_IDENTIFIER')
+  PG_USER_NAME ($PG_USER_NAME) (regex: '$REGEX_IDENTIFIER')
   PG_REPLICATION_NAME ($PG_REPLICATION_NAME) (regex: '$REGEX_IDENTIFIER')
   PG_REPLICATION_PASSWORD ($PG_REPLICATION_PASSWORD) (regex: '$REGEX_PASSWORD')
+  PG_SLOT_NAME ($PG_SLOT_NAME)
 
 For more information visit https://github.com/jesperpedersen/openshift-pgsql
 EOF
