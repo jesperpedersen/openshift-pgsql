@@ -23,4 +23,4 @@ IMAGE_NAME = openshift-pgsql10-slave-centos7
 
 .PHONY: build
 build:
-	docker build -t $(IMAGE_NAME) .
+	docker build --no-cache -t $(IMAGE_NAME) .
