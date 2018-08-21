@@ -9,7 +9,7 @@
          "tags": "database,postgresql"
       }
    },
-   "message": "The following service(s) have been created in your project: openshift-pgsql10-master.\n\n  Username: ${PG_USER_NAME}\n  Password: ${PG_USER_PASSWORD}\n  Database Name: ${PG_DATABASE}\n  Replication username: ${PG_REPLICATION_NAME}\n  Replication password: ${PG_REPLICATION_PASSWORD}\n  Network mask: ${PG_NETWORK_MASK}\n  Connection URL: postgresql://openshift-pgsql10-master:5432/\n\nFor more information about using this template, including OpenShift considerations,\nsee https://github.com/jesperpedersen/openshift-pgsql/",
+   "message": "The following service(s) have been created in your project: openshift-pgsql10-master.\n\n  Username: ${PG_USER_NAME}\n  Password: ${PG_USER_PASSWORD}\n  Database Name: ${PG_DATABASE}\n  Replication username: ${PG_REPLICATION_NAME}\n  Replication password: ${PG_REPLICATION_PASSWORD}\n  Network mask: ${PG_NETWORK_MASK}\n  Slot name 1: ${PG_REPLICA1}\n  Slot name 2: ${PG_REPLICA2}\n  Slot name 3: ${PG_REPLICA3}\n  Slot name 4: ${PG_REPLICA4}\n  Slot name 5: ${PG_REPLICA5}\n  Slot name 6: ${PG_REPLICA6}\n  Connection URL: postgresql://openshift-pgsql10-master:5432/\n\nFor more information about using this template, including OpenShift considerations,\nsee https://github.com/jesperpedersen/openshift-pgsql/",
    "labels": {
       "application": "openshift-pgsql10",
       "createdBy": "template-openshift-pgsql10-master"
@@ -82,6 +82,36 @@
          "description": "max_wal_size setting (GB)",
          "name": "PG_MAX_WAL_SIZE",
          "value": "1"
+      },
+      {
+         "description": "The replication slot name 1",
+         "name": "PG_REPLICA1",
+         "value": "replica1"
+      },
+      {
+         "description": "The replication slot name 2",
+         "name": "PG_REPLICA2",
+         "value": "replica2"
+      },
+      {
+         "description": "The replication slot name 3",
+         "name": "PG_REPLICA3",
+         "value": "replica3"
+      },
+      {
+         "description": "The replication slot name 4",
+         "name": "PG_REPLICA4",
+         "value": "replica4"
+      },
+      {
+         "description": "The replication slot name 5",
+         "name": "PG_REPLICA5",
+         "value": "replica5"
+      },
+      {
+         "description": "The replication slot name 6",
+         "name": "PG_REPLICA6",
+         "value": "replica6"
       },
       {
          "description": "Size of /pgbackup partition (GB)",
@@ -417,6 +447,30 @@
                            {
                               "name": "PG_MAX_WAL_SIZE",
                               "value": "${PG_MAX_WAL_SIZE}"
+                           },
+                           {
+                              "name": "PG_REPLICA1",
+                              "value": "${PG_REPLICA1}"
+                           },
+                           {
+                              "name": "PG_REPLICA2",
+                              "value": "${PG_REPLICA2}"
+                           },
+                           {
+                              "name": "PG_REPLICA3",
+                              "value": "${PG_REPLICA3}"
+                           },
+                           {
+                              "name": "PG_REPLICA4",
+                              "value": "${PG_REPLICA4}"
+                           },
+                           {
+                              "name": "PG_REPLICA5",
+                              "value": "${PG_REPLICA5}"
+                           },
+                           {
+                              "name": "PG_REPLICA6",
+                              "value": "${PG_REPLICA6}"
                            }
                         ],
                         "resources": {},

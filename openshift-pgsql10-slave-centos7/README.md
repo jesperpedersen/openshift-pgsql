@@ -37,8 +37,11 @@ using the `openshift-pgsql10-slave-centos7-template.json` template.
 | Property | Default | Unit | Required | Description |
 |----------|---------|------|----------|-------------|
 | PG_MASTER | | | Yes | The IP of the master |
+| PG_DATABASE | | | Yes | The name of the database |
+| PG_USER_NAME | | | Yes | The user name |
 | PG_REPLICATION_NAME | | | Yes | The replication user |
 | PG_REPLICATION_PASSWORD | | | Yes | The password for the replication user |
+| PG_SLOT_NAME | | | Yes | The replication slot name |
 
 ## SSL support
 

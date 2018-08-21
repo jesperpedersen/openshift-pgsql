@@ -9,7 +9,7 @@
          "tags": "database,postgresql"
       }
    },
-   "message": "The following service(s) have been created in your project: openshift-pgsql10-slave.\n\n  Replication username: ${PG_REPLICATION_NAME}\n  Replication password: ${PG_REPLICATION_PASSWORD}\n  Network mask: ${PG_NETWORK_MASK}\n  Connection URL: postgresql://openshift-pgsql10-slave:5432/\n\nFor more information about using this template, including OpenShift considerations,\nsee https://github.com/jesperpedersen/openshift-pgsql/",
+   "message": "The following service(s) have been created in your project: openshift-pgsql10-slave.\n\n  Master: ${PG_MASTER}\n  Database: ${PG_DATABASE}\n  User name: ${PG_USER_NAME}\n  Replication username: ${PG_REPLICATION_NAME}\n  Replication password: ${PG_REPLICATION_PASSWORD}\n  Slot name: ${PG_SLOT_NAME}\n  Connection URL: postgresql://openshift-pgsql10-slave:5432/\n\nFor more information about using this template, including OpenShift considerations,\nsee https://github.com/jesperpedersen/openshift-pgsql/",
    "labels": {
       "application": "openshift-pgsql10",
       "createdBy": "template-openshift-pgsql10-slave"
@@ -20,12 +20,24 @@
          "name": "PG_MASTER"
       },
       {
+         "description": "The name of the database",
+         "name": "PG_DATABASE"
+      },
+      {
+         "description": "The user name",
+         "name": "PG_USER_NAME"
+      },
+      {
          "description": "The replication user",
          "name": "PG_REPLICATION_NAME"
       },
       {
          "description": "The password for the replication user",
          "name": "PG_REPLICATION_PASSWORD"
+      },
+      {
+         "description": "The replication slot name",
+         "name": "PG_SLOT_NAME"
       },
       {
          "description": "Size of /pgbackup partition (GB)",
@@ -53,9 +65,11 @@
         "kind": "Secret",
         "apiVersion": "v1",
         "metadata": {
-          "name": "openshift-pgsql10-master-secret",
+          "name": "openshift-pgsql10-slave-secret",
         },
         "stringData" : {
+          "database-db" : "${PG_DATABASE}",
+          "database-username" : "${PG_USER_NAME}",
           "database-replication" : "${PG_REPLICATION_NAME}",
           "database-replication-password" : "${PG_REPLICATION_PASSWORD}"
         }
@@ -287,10 +301,28 @@
                               "value": "${PG_MASTER}"
                            },
                            {
+                              "name": "PG_DATABASE",
+                              "valueFrom": {
+                                "secretKeyRef" : {
+                                  "name" : "openshift-pgsql10-slave-secret",
+                                  "key" : "database-db"
+                                }
+                              }
+                           },
+                           {
+                              "name": "PG_USER_NAME",
+                              "valueFrom": {
+                                "secretKeyRef" : {
+                                  "name" : "openshift-pgsql10-slave-secret",
+                                  "key" : "database-username"
+                                }
+                              }
+                           },
+                           {
                               "name": "PG_REPLICATION_NAME",
                               "valueFrom": {
                                 "secretKeyRef" : {
-                                  "name" : "openshift-pgsql10-master-secret",
+                                  "name" : "openshift-pgsql10-slave-secret",
                                   "key" : "database-replication"
                                 }
                               }
@@ -299,10 +331,14 @@
                               "name": "PG_REPLICATION_PASSWORD",
                               "valueFrom": {
                                 "secretKeyRef" : {
-                                  "name" : "openshift-pgsql10-master-secret",
+                                  "name" : "openshift-pgsql10-slave-secret",
                                   "key" : "database-replication-password"
                                 }
                               }
+                           },
+                           {
+                              "name": "PG_SLOT_NAME",
+                              "value": "${PG_SLOT_NAME}"
                            }
                         ],
                         "resources": {},

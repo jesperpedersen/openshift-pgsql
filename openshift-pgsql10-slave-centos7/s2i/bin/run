@@ -56,12 +56,17 @@ generate_passwd_file
 
 if [ ! -f /pgdata/data/PG_VERSION ]; then
     export PG_MASTER=${PG_MASTER}
+    export PG_DATABASE=${PG_DATABASE}
+    export PG_USER_NAME=${PG_USER_NAME}
     export PG_REPLICATION_NAME=${PG_REPLICATION_NAME}
     export PG_REPLICATION_PASSWORD=${PG_REPLICATION_PASSWORD}
+    export PG_SLOT_NAME=${PG_SLOT_NAME}
 
     if [ -z "${PG_MASTER}" ] ||
-       [ -z "${PG_REPLICATION_NAME}" ] || [ -z "${PG_REPLICATION_PASSWORD}" ]; then
-        echo "PG_MASTER, PG_REPLICATION_NAME and PG_REPLICATION_PASSWORD needs to be defined."
+       [ -z "${PG_DATABASE}" ] || [ -z "${PG_USER_NAME}" ] ||
+       [ -z "${PG_REPLICATION_NAME}" ] || [ -z "${PG_REPLICATION_PASSWORD}" ] ||
+       [ -z "${PG_SLOT_NAME}" ]; then
+        echo "PG_MASTER, PG_DATABASE, PG_USER_NAME, PG_REPLICATION_NAME, PG_REPLICATION_PASSWORD and PG_SLOT_NAME needs to be defined."
         exit 1
     fi
 
@@ -83,12 +88,16 @@ if [ ! -f /pgdata/data/PG_VERSION ]; then
     fi
 
     mkdir /pgdata/data/
+    mkdir /pgwal/data/
+    chmod 700 /pgdata/data
+    chmod 700 /pgwal/data
 
-    PGPASSWORD="$PG_REPLICATION_PASSWORD" /usr/pgsql-10/bin/pg_basebackup -X stream --no-password -c fast -h ${PG_MASTER} -U ${PG_REPLICATION_NAME} -D /pgdata/data/
+    PGPASSWORD="$PG_REPLICATION_PASSWORD" /usr/pgsql-10/bin/pg_basebackup -S ${PG_SLOT_NAME} -X stream --no-password -c fast -h ${PG_MASTER} -U ${PG_REPLICATION_NAME} -D /pgdata/data/ --waldir=/pgwal/data
 
     sed -i "s/PG_MASTER/$PG_MASTER/g" /conf/recovery.conf
     sed -i "s/PG_REPLICATION_NAME/$PG_REPLICATION_NAME/g" /conf/recovery.conf
     sed -i "s/PG_REPLICATION_PASSWORD/$PG_REPLICATION_PASSWORD/g" /conf/recovery.conf
+    sed -i "s/PG_SLOT_NAME/$PG_SLOT_NAME/g" /conf/recovery.conf
 
     cp /conf/recovery.conf /pgdata/data/
 
