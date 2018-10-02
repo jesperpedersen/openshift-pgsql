@@ -74,68 +74,6 @@
           "database-replication-password" : "${PG_REPLICATION_PASSWORD}"
         }
       },
-      {
-         "kind": "CronJob",
-         "apiVersion": "batch/v1beta1",
-         "metadata": {
-            "name": "openshift-pgsql10-slave-backup-full"
-         },
-         "spec": {
-            "schedule": "00 06  *   *   0",
-            "jobTemplate": {             
-               "spec": {
-                  "template": {
-                     "metadata": {
-                        "labels": {          
-                            "parent": "openshift-pgsql10-slave-backup-full"
-                        }
-                     },
-                     "spec": {
-                        "containers": [
-                           {
-                              "name": "openshift-pgsql10-slave",
-                              "image": "openshift-pgsql10-slave",
-                              "command": [ "/usr/bin/pgbackrest",  "--type=full", "--stanza=main", "backup" ]
-                           }
-                        ],
-                        "restartPolicy": "OnFailure"
-                     }
-                  }
-               }
-            }
-         }
-       },
-       {
-         "kind": "CronJob",
-         "apiVersion": "batch/v1beta1",
-         "metadata": {
-            "name": "openshift-pgsql10-slave-backup-diff"
-         },
-         "spec": {
-            "schedule": "00 06  *   *   1-6",
-            "jobTemplate": {             
-               "spec": {
-                  "template": {
-                     "metadata": {
-                        "labels": {          
-                            "parent": "openshift-pgsql10-slave-backup-diff"
-                        }
-                     },
-                     "spec": {
-                        "containers": [
-                           {
-                              "name": "openshift-pgsql10-slave",
-                              "image": "openshift-pgsql10-slave",
-                              "command": [ "/usr/bin/pgbackrest",  "--type=diff", "--stanza=main", "backup" ]
-                           }
-                        ],
-                        "restartPolicy": "OnFailure"
-                     }
-                  }
-               }
-            }
-         }
-       },
        {
          "kind": "PersistentVolumeClaim",
          "apiVersion": "v1",

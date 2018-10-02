@@ -105,10 +105,6 @@ if [ ! -f /pgdata/data/PG_VERSION ]; then
     cp /conf/recovery.conf /pgdata/data/
 
     mkdir /pgbackup/data/
-
-    /usr/pgsql-10/bin/pg_ctl -D /pgdata/data/ start
-    /usr/bin/pgbackrest --stanza=main stanza-create
-    /usr/pgsql-10/bin/pg_ctl -D /pgdata/data/ stop
 fi
 
 exec /usr/pgsql-10/bin/postgres -D /pgdata/data/ "$@"
