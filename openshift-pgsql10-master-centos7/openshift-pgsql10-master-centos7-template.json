@@ -84,6 +84,11 @@
          "value": "1"
       },
       {
+         "description": "password_encryption setting",
+         "name": "PG_PASSWORD_ENCRYPTION",
+         "value": "scram-sha-256"
+      },
+      {
          "description": "The replication slot name 1",
          "name": "PG_REPLICA1",
          "value": "replica1"
@@ -447,6 +452,10 @@
                            {
                               "name": "PG_MAX_WAL_SIZE",
                               "value": "${PG_MAX_WAL_SIZE}"
+                           },
+                           {
+                              "name": "PG_PASSWORD_ENCRYPTION",
+                              "value": "${PG_PASSWORD_ENCRYPTION}"
                            },
                            {
                               "name": "PG_REPLICA1",
