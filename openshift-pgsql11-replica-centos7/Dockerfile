@@ -1,6 +1,6 @@
 # The MIT License (MIT)
 #
-# Copyright (c) 2018 Jesper Pedersen <jesper.pedersen@redhat.com>
+# Copyright (c) 2019 Jesper Pedersen <jesper.pedersen@redhat.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the "Software"),
@@ -19,20 +19,20 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-# openshift-pgsql10-slave-centos7
+# openshift-pgsql11-replica-centos7
 FROM centos/s2i-core-centos7
 
 LABEL maintainer="Jesper Pedersen <jesper.pedersen@redhat.com>"
 
-LABEL summary="PostgreSQL 10 Slave" \
-      description="PostgreSQL 10 Slave" \
-      io.k8s.description="PostgreSQL 10 Slave" \
-      io.k8s.display-name="PostgreSQL 10 Slave" \
+LABEL summary="PostgreSQL 11 Replica" \
+      description="PostgreSQL 11 Replica" \
+      io.k8s.description="PostgreSQL 11 Replica" \
+      io.k8s.display-name="PostgreSQL 11 Replica" \
       io.openshift.expose-services="5432" \
       io.openshift.tags="postgresql,postgres,database" \
       io.openshift.s2i.scripts-url="image:///usr/libexec/s2i"
 
-ENV PGVERSION="10"
+ENV PGVERSION="11"
 ENV PGROOT="/usr/pgsql-${PGVERSION}"
 ENV APP_DATA="/opt/app-root"
 
@@ -40,9 +40,9 @@ ENV APP_DATA="/opt/app-root"
 COPY root/ /
 
 RUN rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
- && rpm -Uvh https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-7-x86_64/pgdg-centos10-10-2.noarch.rpm \
+ && rpm -Uvh https://download.postgresql.org/pub/repos/yum/11/redhat/rhel-7-x86_64/pgdg-centos11-11-2.noarch.rpm \
  && yum -y update \
- && yum -y install postgresql10 postgresql10-server postgresql10-contrib postgresql10-libs pgbackrest crontabs nss_wrapper gettext bind-utils \
+ && yum -y install postgresql11 postgresql11-server postgresql11-contrib postgresql11-libs pgbackrest crontabs nss_wrapper gettext bind-utils \
  && yum -y clean all
 
 COPY ./s2i/bin/ /usr/libexec/s2i

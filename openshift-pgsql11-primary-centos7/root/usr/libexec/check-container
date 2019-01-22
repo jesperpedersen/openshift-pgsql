@@ -21,7 +21,7 @@ while true; do
 done
 
 # Timeout is infinite (openshift template has the timeout pre-set)
-/usr/pgsql-10/bin/pg_isready -q \
+/usr/pgsql-11/bin/pg_isready -q \
     -h 127.0.0.1 \
     ${PG_USER_NAME+-U "$PG_USER_NAME"} \
     ${PG_DATABASE+-d "$PG_DATABASE"} \

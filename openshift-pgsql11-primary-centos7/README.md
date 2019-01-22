@@ -1,6 +1,6 @@
-# OpenShift PostgreSQL Master
+# OpenShift PostgreSQL Primary
 
-This project contains the PostgreSQL Master image for OpenShift.
+This project contains the PostgreSQL Primary image for OpenShift.
 
 ## Getting Started
 
@@ -26,14 +26,14 @@ docker login -u developer -p $(oc whoami -t) $(minishift openshift registry)
 make
 
 # Create a Docker tag
-docker tag openshift-pgsql10-master-centos7 $(minishift openshift registry)/myproject/openshift-pgsql10-master-centos7
+docker tag openshift-pgsql11-primary-centos7 $(minishift openshift registry)/myproject/openshift-pgsql11-primary-centos7
 
 # Push the image to the registry
-docker push $(minishift openshift registry)/myproject/openshift-pgsql10-master-centos7
+docker push $(minishift openshift registry)/myproject/openshift-pgsql11-primary-centos7
 ```
 
 The image can be deployed through the [minishift](https://github.com/minishift/minishift/releases) web console,
-using the `openshift-pgsql10-master-centos7-template.json` template.
+using the `openshift-pgsql11-primary-centos7-template.json` template.
 
 ## Configuration
 

@@ -2,17 +2,17 @@
    "kind": "Template",
    "apiVersion": "v1",
    "metadata": {
-      "name": "openshift-pgsql10-slave",
+      "name": "openshift-pgsql11-replica",
       "annotations": {
          "iconClass": "icon-postgresql",
-         "description": "Template for a PostgreSQL 10 slave node built using STI",
+         "description": "Template for a PostgreSQL 11 replica node built using STI",
          "tags": "database,postgresql"
       }
    },
-   "message": "The following service(s) have been created in your project: openshift-pgsql10-slave.\n\n  Master: ${PG_MASTER}\n  Database: ${PG_DATABASE}\n  User name: ${PG_USER_NAME}\n  Replication username: ${PG_REPLICATION_NAME}\n  Replication password: ${PG_REPLICATION_PASSWORD}\n  Slot name: ${PG_SLOT_NAME}\n  Connection URL: postgresql://openshift-pgsql10-slave:5432/\n\nFor more information about using this template, including OpenShift considerations,\nsee https://github.com/jesperpedersen/openshift-pgsql/",
+   "message": "The following service(s) have been created in your project: openshift-pgsql11-replica.\n\n  Master: ${PG_MASTER}\n  Database: ${PG_DATABASE}\n  User name: ${PG_USER_NAME}\n  Replication username: ${PG_REPLICATION_NAME}\n  Replication password: ${PG_REPLICATION_PASSWORD}\n  Slot name: ${PG_SLOT_NAME}\n  Connection URL: postgresql://openshift-pgsql11-replica:5432/\n\nFor more information about using this template, including OpenShift considerations,\nsee https://github.com/jesperpedersen/openshift-pgsql/",
    "labels": {
-      "application": "openshift-pgsql10",
-      "createdBy": "template-openshift-pgsql10-slave"
+      "application": "openshift-pgsql11",
+      "createdBy": "template-openshift-pgsql11-replica"
    },
    "parameters": [
       {
@@ -65,7 +65,7 @@
         "kind": "Secret",
         "apiVersion": "v1",
         "metadata": {
-          "name": "openshift-pgsql10-slave-secret",
+          "name": "openshift-pgsql11-replica-secret",
         },
         "stringData" : {
           "database-db" : "${PG_DATABASE}",
@@ -78,7 +78,7 @@
          "kind": "PersistentVolumeClaim",
          "apiVersion": "v1",
          "metadata": {
-            "name": "openshift-pgsql10-slave-pgbackup"
+            "name": "openshift-pgsql11-replica-pgbackup"
          },
          "spec": {
             "accessModes": [
@@ -95,7 +95,7 @@
          "kind": "PersistentVolumeClaim",
          "apiVersion": "v1",
          "metadata": {
-            "name": "openshift-pgsql10-slave-pgconf"
+            "name": "openshift-pgsql11-replica-pgconf"
          },
          "spec": {
             "accessModes": [
@@ -112,7 +112,7 @@
          "kind": "PersistentVolumeClaim",
          "apiVersion": "v1",
          "metadata": {
-            "name": "openshift-pgsql10-slave-pgdata"
+            "name": "openshift-pgsql11-replica-pgdata"
          },
          "spec": {
             "accessModes": [
@@ -129,7 +129,7 @@
          "kind": "PersistentVolumeClaim",
          "apiVersion": "v1",
          "metadata": {
-            "name": "openshift-pgsql10-slave-pgwal"
+            "name": "openshift-pgsql11-replica-pgwal"
          },
          "spec": {
             "accessModes": [
@@ -146,7 +146,7 @@
          "kind": "DeploymentConfig",
          "apiVersion": "v1",
          "metadata": {
-            "name": "openshift-pgsql10-slave"
+            "name": "openshift-pgsql11-replica"
          },
          "spec": {
             "strategy": {
@@ -158,12 +158,12 @@
                   "imageChangeParams": {
                      "automatic": true,
                      "containerNames": [
-                        "openshift-pgsql10-slave"
+                        "openshift-pgsql11-replica"
                      ],
                      "from": {
                         "kind": "ImageStreamTag",
                         "namespace": "myproject",
-                        "name": "openshift-pgsql10-slave-centos7:latest"
+                        "name": "openshift-pgsql11-replica-centos7:latest"
                      }
                   }
                },
@@ -173,46 +173,46 @@
             ],
             "replicas": 1,
             "selector": {
-               "deploymentConfig": "openshift-pgsql10-slave"
+               "deploymentConfig": "openshift-pgsql11-replica"
             },
             "template": {
                "metadata": {
-                  "name": "openshift-pgsql10-slave",
+                  "name": "openshift-pgsql11-replica",
                   "labels": {
-                     "deploymentConfig": "openshift-pgsql10-slave"
+                     "deploymentConfig": "openshift-pgsql11-replica"
                   }
                },
                "spec": {
                   "volumes": [
                      {
-                        "name": "openshift-pgsql10-slave-pgbackup",
+                        "name": "openshift-pgsql11-replica-pgbackup",
                         "persistentVolumeClaim": {
-                           "claimName": "openshift-pgsql10-slave-pgbackup"
+                           "claimName": "openshift-pgsql11-replica-pgbackup"
                         }
                      },
                      {
-                        "name": "openshift-pgsql10-slave-pgconf",
+                        "name": "openshift-pgsql11-replica-pgconf",
                         "persistentVolumeClaim": {
-                           "claimName": "openshift-pgsql10-slave-pgconf"
+                           "claimName": "openshift-pgsql11-replica-pgconf"
                         }
                      },
                      {
-                        "name": "openshift-pgsql10-slave-pgdata",
+                        "name": "openshift-pgsql11-replica-pgdata",
                         "persistentVolumeClaim": {
-                           "claimName": "openshift-pgsql10-slave-pgdata"
+                           "claimName": "openshift-pgsql11-replica-pgdata"
                         }
                      },
                      {
-                        "name": "openshift-pgsql10-slave-pgwal",
+                        "name": "openshift-pgsql11-replica-pgwal",
                         "persistentVolumeClaim": {
-                           "claimName": "openshift-pgsql10-slave-pgwal"
+                           "claimName": "openshift-pgsql11-replica-pgwal"
                         }
                      }
                   ],
                   "containers": [
                      {
-                        "name": "openshift-pgsql10-slave",
-                        "image": "openshift-pgsql10-slave",
+                        "name": "openshift-pgsql11-replica",
+                        "image": "openshift-pgsql11-replica",
                         "ports": [
                            {
                               "containerPort": 5432,
@@ -242,7 +242,7 @@
                               "name": "PG_DATABASE",
                               "valueFrom": {
                                 "secretKeyRef" : {
-                                  "name" : "openshift-pgsql10-slave-secret",
+                                  "name" : "openshift-pgsql11-replica-secret",
                                   "key" : "database-db"
                                 }
                               }
@@ -251,7 +251,7 @@
                               "name": "PG_USER_NAME",
                               "valueFrom": {
                                 "secretKeyRef" : {
-                                  "name" : "openshift-pgsql10-slave-secret",
+                                  "name" : "openshift-pgsql11-replica-secret",
                                   "key" : "database-username"
                                 }
                               }
@@ -260,7 +260,7 @@
                               "name": "PG_REPLICATION_NAME",
                               "valueFrom": {
                                 "secretKeyRef" : {
-                                  "name" : "openshift-pgsql10-slave-secret",
+                                  "name" : "openshift-pgsql11-replica-secret",
                                   "key" : "database-replication"
                                 }
                               }
@@ -269,7 +269,7 @@
                               "name": "PG_REPLICATION_PASSWORD",
                               "valueFrom": {
                                 "secretKeyRef" : {
-                                  "name" : "openshift-pgsql10-slave-secret",
+                                  "name" : "openshift-pgsql11-replica-secret",
                                   "key" : "database-replication-password"
                                 }
                               }
@@ -282,19 +282,19 @@
                         "resources": {},
                         "volumeMounts": [
                            {
-                              "name": "openshift-pgsql10-slave-pgbackup",
+                              "name": "openshift-pgsql11-replica-pgbackup",
                               "mountPath": "/pgbackup"
                            },
                            {
-                              "name": "openshift-pgsql10-slave-pgconf",
+                              "name": "openshift-pgsql11-replica-pgconf",
                               "mountPath": "/pgconf"
                            },
                            {
-                              "name": "openshift-pgsql10-slave-pgdata",
+                              "name": "openshift-pgsql11-replica-pgdata",
                               "mountPath": "/pgdata"
                            },
                            {
-                              "name": "openshift-pgsql10-slave-pgwal",
+                              "name": "openshift-pgsql11-replica-pgwal",
                               "mountPath": "/pgwal"
                            }
                         ],
@@ -316,7 +316,7 @@
          "kind": "Service",
          "apiVersion": "v1",
          "metadata": {
-            "name": "openshift-pgsql10-slave"
+            "name": "openshift-pgsql11-replica"
          },
          "spec": {
             "ports": [
@@ -326,7 +326,7 @@
                }
             ],
             "selector": {
-               "deploymentConfig": "openshift-pgsql10-slave"
+               "deploymentConfig": "openshift-pgsql11-replica"
             }
          }
       }

@@ -2,17 +2,17 @@
    "kind": "Template",
    "apiVersion": "v1",
    "metadata": {
-      "name": "openshift-pgsql10-master",
+      "name": "openshift-pgsql11-primary",
       "annotations": {
          "iconClass": "icon-postgresql",
-         "description": "Template for PostgreSQL 10 running a master node, and replicas built using STI",
+         "description": "Template for PostgreSQL 11 running a primary node, and replicas built using STI",
          "tags": "database,postgresql"
       }
    },
-   "message": "The following service(s) have been created in your project: openshift-pgsql10-master.\n\n  Username: ${PG_USER_NAME}\n  Password: ${PG_USER_PASSWORD}\n  Database Name: ${PG_DATABASE}\n  Replication username: ${PG_REPLICATION_NAME}\n  Replication password: ${PG_REPLICATION_PASSWORD}\n  Network mask: ${PG_NETWORK_MASK}\n  Slot name 1: ${PG_REPLICA1}\n  Slot name 2: ${PG_REPLICA2}\n  Slot name 3: ${PG_REPLICA3}\n  Slot name 4: ${PG_REPLICA4}\n  Slot name 5: ${PG_REPLICA5}\n  Slot name 6: ${PG_REPLICA6}\n  Connection URL: postgresql://openshift-pgsql10-master:5432/\n\nFor more information about using this template, including OpenShift considerations,\nsee https://github.com/jesperpedersen/openshift-pgsql/",
+   "message": "The following service(s) have been created in your project: openshift-pgsql11-primary.\n\n  Username: ${PG_USER_NAME}\n  Password: ${PG_USER_PASSWORD}\n  Database Name: ${PG_DATABASE}\n  Replication username: ${PG_REPLICATION_NAME}\n  Replication password: ${PG_REPLICATION_PASSWORD}\n  Network mask: ${PG_NETWORK_MASK}\n  Slot name 1: ${PG_REPLICA1}\n  Slot name 2: ${PG_REPLICA2}\n  Slot name 3: ${PG_REPLICA3}\n  Slot name 4: ${PG_REPLICA4}\n  Slot name 5: ${PG_REPLICA5}\n  Slot name 6: ${PG_REPLICA6}\n  Connection URL: postgresql://openshift-pgsql11-primary:5432/\n\nFor more information about using this template, including OpenShift considerations,\nsee https://github.com/jesperpedersen/openshift-pgsql/",
    "labels": {
-      "application": "openshift-pgsql10",
-      "createdBy": "template-openshift-pgsql10-master"
+      "application": "openshift-pgsql11",
+      "createdBy": "template-openshift-pgsql11-primary"
    },
    "parameters": [
       {
@@ -144,7 +144,7 @@
         "kind": "Secret",
         "apiVersion": "v1",
         "metadata": {
-          "name": "openshift-pgsql10-master-secret",
+          "name": "openshift-pgsql11-primary-secret",
         },
         "stringData" : {
           "database-db" : "${PG_DATABASE}",
@@ -158,7 +158,7 @@
          "kind": "CronJob",
          "apiVersion": "batch/v1beta1",
          "metadata": {
-            "name": "openshift-pgsql10-master-backup-full"
+            "name": "openshift-pgsql11-primary-backup-full"
          },
          "spec": {
             "schedule": "00 06  *   *   0",
@@ -167,14 +167,14 @@
                   "template": {
                      "metadata": {
                         "labels": {          
-                            "parent": "openshift-pgsql10-master-backup-full"
+                            "parent": "openshift-pgsql11-primary-backup-full"
                         }
                      },
                      "spec": {
                         "containers": [
                            {
-                              "name": "openshift-pgsql10-master",
-                              "image": "openshift-pgsql10-master",
+                              "name": "openshift-pgsql11-primary",
+                              "image": "openshift-pgsql11-primary",
                               "command": [ "/usr/bin/pgbackrest",  "--type=full", "--stanza=main", "backup" ]
                            }
                         ],
@@ -189,7 +189,7 @@
          "kind": "CronJob",
          "apiVersion": "batch/v1beta1",
          "metadata": {
-            "name": "openshift-pgsql10-master-backup-diff"
+            "name": "openshift-pgsql11-primary-backup-diff"
          },
          "spec": {
             "schedule": "00 06  *   *   1-6",
@@ -198,14 +198,14 @@
                   "template": {
                      "metadata": {
                         "labels": {          
-                            "parent": "openshift-pgsql10-master-backup-diff"
+                            "parent": "openshift-pgsql11-primary-backup-diff"
                         }
                      },
                      "spec": {
                         "containers": [
                            {
-                              "name": "openshift-pgsql10-master",
-                              "image": "openshift-pgsql10-master",
+                              "name": "openshift-pgsql11-primary",
+                              "image": "openshift-pgsql11-primary",
                               "command": [ "/usr/bin/pgbackrest",  "--type=diff", "--stanza=main", "backup" ]
                            }
                         ],
@@ -220,7 +220,7 @@
          "kind": "PersistentVolumeClaim",
          "apiVersion": "v1",
          "metadata": {
-            "name": "openshift-pgsql10-master-pgbackup"
+            "name": "openshift-pgsql11-primary-pgbackup"
          },
          "spec": {
             "accessModes": [
@@ -237,7 +237,7 @@
          "kind": "PersistentVolumeClaim",
          "apiVersion": "v1",
          "metadata": {
-            "name": "openshift-pgsql10-master-pgconf"
+            "name": "openshift-pgsql11-primary-pgconf"
          },
          "spec": {
             "accessModes": [
@@ -254,7 +254,7 @@
          "kind": "PersistentVolumeClaim",
          "apiVersion": "v1",
          "metadata": {
-            "name": "openshift-pgsql10-master-pgdata"
+            "name": "openshift-pgsql11-primary-pgdata"
          },
          "spec": {
             "accessModes": [
@@ -271,7 +271,7 @@
          "kind": "PersistentVolumeClaim",
          "apiVersion": "v1",
          "metadata": {
-            "name": "openshift-pgsql10-master-pgwal"
+            "name": "openshift-pgsql11-primary-pgwal"
          },
          "spec": {
             "accessModes": [
@@ -288,7 +288,7 @@
          "kind": "DeploymentConfig",
          "apiVersion": "v1",
          "metadata": {
-            "name": "openshift-pgsql10-master"
+            "name": "openshift-pgsql11-primary"
          },
          "spec": {
             "strategy": {
@@ -300,12 +300,12 @@
                   "imageChangeParams": {
                      "automatic": true,
                      "containerNames": [
-                        "openshift-pgsql10-master"
+                        "openshift-pgsql11-primary"
                      ],
                      "from": {
                         "kind": "ImageStreamTag",
                         "namespace": "myproject",
-                        "name": "openshift-pgsql10-master-centos7:latest"
+                        "name": "openshift-pgsql11-primary-centos7:latest"
                      }
                   }
                },
@@ -315,46 +315,46 @@
             ],
             "replicas": 1,
             "selector": {
-               "deploymentConfig": "openshift-pgsql10-master"
+               "deploymentConfig": "openshift-pgsql11-primary"
             },
             "template": {
                "metadata": {
-                  "name": "openshift-pgsql10-master",
+                  "name": "openshift-pgsql11-primary",
                   "labels": {
-                     "deploymentConfig": "openshift-pgsql10-master"
+                     "deploymentConfig": "openshift-pgsql11-primary"
                   }
                },
                "spec": {
                   "volumes": [
                      {
-                        "name": "openshift-pgsql10-master-pgbackup",
+                        "name": "openshift-pgsql11-primary-pgbackup",
                         "persistentVolumeClaim": {
-                           "claimName": "openshift-pgsql10-master-pgbackup"
+                           "claimName": "openshift-pgsql11-primary-pgbackup"
                         }
                      },
                      {
-                        "name": "openshift-pgsql10-master-pgconf",
+                        "name": "openshift-pgsql11-primary-pgconf",
                         "persistentVolumeClaim": {
-                           "claimName": "openshift-pgsql10-master-pgconf"
+                           "claimName": "openshift-pgsql11-primary-pgconf"
                         }
                      },
                      {
-                        "name": "openshift-pgsql10-master-pgdata",
+                        "name": "openshift-pgsql11-primary-pgdata",
                         "persistentVolumeClaim": {
-                           "claimName": "openshift-pgsql10-master-pgdata"
+                           "claimName": "openshift-pgsql11-primary-pgdata"
                         }
                      },
                      {
-                        "name": "openshift-pgsql10-master-pgwal",
+                        "name": "openshift-pgsql11-primary-pgwal",
                         "persistentVolumeClaim": {
-                           "claimName": "openshift-pgsql10-master-pgwal"
+                           "claimName": "openshift-pgsql11-primary-pgwal"
                         }
                      }
                   ],
                   "containers": [
                      {
-                        "name": "openshift-pgsql10-master",
-                        "image": "openshift-pgsql10-master",
+                        "name": "openshift-pgsql11-primary",
+                        "image": "openshift-pgsql11-primary",
                         "ports": [
                            {
                               "containerPort": 5432,
@@ -380,7 +380,7 @@
                               "name": "PG_DATABASE",
                               "valueFrom": {
                                 "secretKeyRef" : {
-                                  "name" : "openshift-pgsql10-master-secret",
+                                  "name" : "openshift-pgsql11-primary-secret",
                                   "key" : "database-db"
                                 }
                               }
@@ -389,7 +389,7 @@
                               "name": "PG_USER_NAME",
                               "valueFrom": {
                                 "secretKeyRef" : {
-                                  "name" : "openshift-pgsql10-master-secret",
+                                  "name" : "openshift-pgsql11-primary-secret",
                                   "key" : "database-username"
                                 }
                               }
@@ -398,7 +398,7 @@
                               "name": "PG_USER_PASSWORD",
                               "valueFrom": {
                                 "secretKeyRef" : {
-                                  "name" : "openshift-pgsql10-master-secret",
+                                  "name" : "openshift-pgsql11-primary-secret",
                                   "key" : "database-username-password"
                                 }
                               }
@@ -407,7 +407,7 @@
                               "name": "PG_REPLICATION_NAME",
                               "valueFrom": {
                                 "secretKeyRef" : {
-                                  "name" : "openshift-pgsql10-master-secret",
+                                  "name" : "openshift-pgsql11-primary-secret",
                                   "key" : "database-replication"
                                 }
                               }
@@ -416,7 +416,7 @@
                               "name": "PG_REPLICATION_PASSWORD",
                               "valueFrom": {
                                 "secretKeyRef" : {
-                                  "name" : "openshift-pgsql10-master-secret",
+                                  "name" : "openshift-pgsql11-primary-secret",
                                   "key" : "database-replication-password"
                                 }
                               }
@@ -485,19 +485,19 @@
                         "resources": {},
                         "volumeMounts": [
                            {
-                              "name": "openshift-pgsql10-master-pgbackup",
+                              "name": "openshift-pgsql11-primary-pgbackup",
                               "mountPath": "/pgbackup"
                            },
                            {
-                              "name": "openshift-pgsql10-master-pgconf",
+                              "name": "openshift-pgsql11-primary-pgconf",
                               "mountPath": "/pgconf"
                            },
                            {
-                              "name": "openshift-pgsql10-master-pgdata",
+                              "name": "openshift-pgsql11-primary-pgdata",
                               "mountPath": "/pgdata"
                            },
                            {
-                              "name": "openshift-pgsql10-master-pgwal",
+                              "name": "openshift-pgsql11-primary-pgwal",
                               "mountPath": "/pgwal"
                            }
                         ],
@@ -519,7 +519,7 @@
          "kind": "Service",
          "apiVersion": "v1",
          "metadata": {
-            "name": "openshift-pgsql10-master"
+            "name": "openshift-pgsql11-primary"
          },
          "spec": {
             "ports": [
@@ -529,7 +529,7 @@
                }
             ],
             "selector": {
-               "deploymentConfig": "openshift-pgsql10-master"
+               "deploymentConfig": "openshift-pgsql11-primary"
             }
          }
       }
