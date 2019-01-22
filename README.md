@@ -2,6 +2,8 @@
 
 This repository contains [PostgreSQL](https://www.postgresql.org) images for [OpenShift](https://www.openshift.com/).
 
+**DEPRECATED; Only images on `master` branch are maintained**
+
 The images makes use of
 
 * [OpenShift S2I CentOS](https://hub.docker.com/r/centos/s2i-core-centos7/) 7
