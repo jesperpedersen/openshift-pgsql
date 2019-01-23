@@ -103,8 +103,6 @@ if [ ! -f /pgdata/data/PG_VERSION ]; then
     sed -i "s/PG_SLOT_NAME/$PG_SLOT_NAME/g" /conf/recovery.conf
 
     cp /conf/recovery.conf /pgdata/data/
-
-    mkdir /pgbackup/data/
 fi
 
 exec /usr/pgsql-11/bin/postgres -D /pgdata/data/ "$@"

@@ -40,11 +40,6 @@
          "name": "PG_SLOT_NAME"
       },
       {
-         "description": "Size of /pgbackup partition (GB)",
-         "name": "PG_PGBACKUP",
-         "value": "10"
-      },
-      {
          "description": "Size of /pgconf partition (GB)",
          "name": "PG_PGCONF",
          "value": "1"
@@ -73,23 +68,6 @@
           "database-replication" : "${PG_REPLICATION_NAME}",
           "database-replication-password" : "${PG_REPLICATION_PASSWORD}"
         }
-      },
-       {
-         "kind": "PersistentVolumeClaim",
-         "apiVersion": "v1",
-         "metadata": {
-            "name": "openshift-pgsql11-replica-pgbackup"
-         },
-         "spec": {
-            "accessModes": [
-               "ReadWriteOnce"
-            ],
-            "resources": {
-               "requests": {
-                  "storage": "${PG_PGBACKUP}Gi"
-               }
-            }
-         }
       },
       {
          "kind": "PersistentVolumeClaim",
@@ -185,12 +163,6 @@
                "spec": {
                   "volumes": [
                      {
-                        "name": "openshift-pgsql11-replica-pgbackup",
-                        "persistentVolumeClaim": {
-                           "claimName": "openshift-pgsql11-replica-pgbackup"
-                        }
-                     },
-                     {
                         "name": "openshift-pgsql11-replica-pgconf",
                         "persistentVolumeClaim": {
                            "claimName": "openshift-pgsql11-replica-pgconf"
@@ -281,10 +253,6 @@
                         ],
                         "resources": {},
                         "volumeMounts": [
-                           {
-                              "name": "openshift-pgsql11-replica-pgbackup",
-                              "mountPath": "/pgbackup"
-                           },
                            {
                               "name": "openshift-pgsql11-replica-pgconf",
                               "mountPath": "/pgconf"

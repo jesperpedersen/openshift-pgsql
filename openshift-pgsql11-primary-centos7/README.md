@@ -67,7 +67,6 @@ using the `openshift-pgsql11-primary-centos7-template.json` template.
 | `/pgconf` | Volume for SSL configuration |
 | `/pgdata` | PostgreSQL data directory |
 | `/pgwal` | PostgreSQL Write-Ahead Log (WAL) |
-| `/pgbackup` | PostgreSQL backup volume |
 
 The data of each of these volumes is located within their `data` directory.
 

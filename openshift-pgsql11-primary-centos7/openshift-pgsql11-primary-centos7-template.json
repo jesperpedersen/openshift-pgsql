@@ -119,11 +119,6 @@
          "value": "replica6"
       },
       {
-         "description": "Size of /pgbackup partition (GB)",
-         "name": "PG_PGBACKUP",
-         "value": "10"
-      },
-      {
          "description": "Size of /pgconf partition (GB)",
          "name": "PG_PGCONF",
          "value": "1"
@@ -153,85 +148,6 @@
           "database-replication" : "${PG_REPLICATION_NAME}",
           "database-replication-password" : "${PG_REPLICATION_PASSWORD}"
         }
-      },
-      {
-         "kind": "CronJob",
-         "apiVersion": "batch/v1beta1",
-         "metadata": {
-            "name": "openshift-pgsql11-primary-backup-full"
-         },
-         "spec": {
-            "schedule": "00 06  *   *   0",
-            "jobTemplate": {             
-               "spec": {
-                  "template": {
-                     "metadata": {
-                        "labels": {          
-                            "parent": "openshift-pgsql11-primary-backup-full"
-                        }
-                     },
-                     "spec": {
-                        "containers": [
-                           {
-                              "name": "openshift-pgsql11-primary",
-                              "image": "openshift-pgsql11-primary",
-                              "command": [ "/usr/bin/pgbackrest",  "--type=full", "--stanza=main", "backup" ]
-                           }
-                        ],
-                        "restartPolicy": "OnFailure"
-                     }
-                  }
-               }
-            }
-         }
-       },
-       {
-         "kind": "CronJob",
-         "apiVersion": "batch/v1beta1",
-         "metadata": {
-            "name": "openshift-pgsql11-primary-backup-diff"
-         },
-         "spec": {
-            "schedule": "00 06  *   *   1-6",
-            "jobTemplate": {             
-               "spec": {
-                  "template": {
-                     "metadata": {
-                        "labels": {          
-                            "parent": "openshift-pgsql11-primary-backup-diff"
-                        }
-                     },
-                     "spec": {
-                        "containers": [
-                           {
-                              "name": "openshift-pgsql11-primary",
-                              "image": "openshift-pgsql11-primary",
-                              "command": [ "/usr/bin/pgbackrest",  "--type=diff", "--stanza=main", "backup" ]
-                           }
-                        ],
-                        "restartPolicy": "OnFailure"
-                     }
-                  }
-               }
-            }
-         }
-       },
-       {
-         "kind": "PersistentVolumeClaim",
-         "apiVersion": "v1",
-         "metadata": {
-            "name": "openshift-pgsql11-primary-pgbackup"
-         },
-         "spec": {
-            "accessModes": [
-               "ReadWriteOnce"
-            ],
-            "resources": {
-               "requests": {
-                  "storage": "${PG_PGBACKUP}Gi"
-               }
-            }
-         }
       },
       {
          "kind": "PersistentVolumeClaim",
@@ -326,12 +242,6 @@
                },
                "spec": {
                   "volumes": [
-                     {
-                        "name": "openshift-pgsql11-primary-pgbackup",
-                        "persistentVolumeClaim": {
-                           "claimName": "openshift-pgsql11-primary-pgbackup"
-                        }
-                     },
                      {
                         "name": "openshift-pgsql11-primary-pgconf",
                         "persistentVolumeClaim": {
@@ -484,10 +394,6 @@
                         ],
                         "resources": {},
                         "volumeMounts": [
-                           {
-                              "name": "openshift-pgsql11-primary-pgbackup",
-                              "mountPath": "/pgbackup"
-                           },
                            {
                               "name": "openshift-pgsql11-primary-pgconf",
                               "mountPath": "/pgconf"

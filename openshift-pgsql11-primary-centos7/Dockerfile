@@ -42,12 +42,12 @@ COPY root/ /
 RUN rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
  && rpm -Uvh https://download.postgresql.org/pub/repos/yum/11/redhat/rhel-7-x86_64/pgdg-centos11-11-2.noarch.rpm \
  && yum -y update \
- && yum -y install postgresql11 postgresql11-server postgresql11-contrib postgresql11-libs pgbackrest crontabs nss_wrapper gettext bind-utils \
+ && yum -y install postgresql11 postgresql11-server postgresql11-contrib postgresql11-libs crontabs nss_wrapper gettext bind-utils \
  && yum -y clean all
 
 COPY ./s2i/bin/ /usr/libexec/s2i
 
-RUN mkdir -p /conf /pgconf /pgdata /pgwal /pgbackup
+RUN mkdir -p /conf /pgconf /pgdata /pgwal
 
 COPY conf/* /conf/
 
@@ -55,13 +55,9 @@ RUN /usr/libexec/fix-permissions /conf \
  && /usr/libexec/fix-permissions /pgconf \
  && /usr/libexec/fix-permissions /pgdata \
  && /usr/libexec/fix-permissions /pgwal \
- && /usr/libexec/fix-permissions /pgbackup \
  && /usr/libexec/fix-permissions /var/run/postgresql
 
-COPY conf/pgbackrest.conf /etc/
-RUN /usr/libexec/fix-permissions /var/log/pgbackrest
-
-VOLUME ["/pgconf", "/pgdata", "/pgwal", "/pgbackup"]
+VOLUME ["/pgconf", "/pgdata", "/pgwal"]
 
 EXPOSE 5432
 

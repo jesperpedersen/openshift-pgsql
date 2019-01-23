@@ -160,8 +160,6 @@ if [ ! -f /pgdata/data/PG_VERSION ]; then
         chmod 0600 /pgdata/data/server.key
     fi
 
-    mkdir /pgbackup/data
-
     sed -i "s/PG_DATABASE_ENCODING/$PG_DATABASE_ENCODING/g" /conf/setup.sql
     sed -i "s/PG_DATABASE/$PG_DATABASE/g" /conf/setup.sql
     sed -i "s/PG_USER_NAME/$PG_USER_NAME/g" /conf/setup.sql
@@ -177,7 +175,6 @@ if [ ! -f /pgdata/data/PG_VERSION ]; then
     /usr/pgsql-11/bin/psql -q -c "SELECT pg_create_physical_replication_slot('$PG_REPLICA4');" postgres
     /usr/pgsql-11/bin/psql -q -c "SELECT pg_create_physical_replication_slot('$PG_REPLICA5');" postgres
     /usr/pgsql-11/bin/psql -q -c "SELECT pg_create_physical_replication_slot('$PG_REPLICA6');" postgres
-    /usr/bin/pgbackrest --stanza=main stanza-create
     /usr/pgsql-11/bin/pg_ctl -D /pgdata/data stop
 fi
 
