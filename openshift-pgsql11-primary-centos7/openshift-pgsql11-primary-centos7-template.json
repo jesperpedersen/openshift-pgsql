@@ -9,7 +9,7 @@
          "tags": "database,postgresql"
       }
    },
-   "message": "The following service(s) have been created in your project: openshift-pgsql11-primary.\n\n  Username: ${PG_USER_NAME}\n  Password: ${PG_USER_PASSWORD}\n  Database Name: ${PG_DATABASE}\n  Replication username: ${PG_REPLICATION_NAME}\n  Replication password: ${PG_REPLICATION_PASSWORD}\n  Network mask: ${PG_NETWORK_MASK}\n  Slot name 1: ${PG_REPLICA1}\n  Slot name 2: ${PG_REPLICA2}\n  Slot name 3: ${PG_REPLICA3}\n  Slot name 4: ${PG_REPLICA4}\n  Slot name 5: ${PG_REPLICA5}\n  Slot name 6: ${PG_REPLICA6}\n  Connection URL: postgresql://openshift-pgsql11-primary:5432/\n\nFor more information about using this template, including OpenShift considerations,\nsee https://github.com/jesperpedersen/openshift-pgsql/",
+   "message": "The following service(s) have been created in your project: openshift-pgsql11-primary.\n\n  Username: ${PG_USER_NAME}\n  Password: ${PG_USER_PASSWORD}\n  Database Name: ${PG_DATABASE}\n  Replication username: ${PG_REPLICATION_NAME}\n  Replication password: ${PG_REPLICATION_PASSWORD}\n  Network mask: ${PG_NETWORK_MASK}\n  Slot name 1: ${PG_REPLICA1}\n  Slot name 2: ${PG_REPLICA2}\n  Slot name 3: ${PG_REPLICA3}\n  Slot name 4: ${PG_REPLICA4}\n  Slot name 5: ${PG_REPLICA5}\n  Connection URL: postgresql://openshift-pgsql11-primary:5432/\n\nFor more information about using this template, including OpenShift considerations,\nsee https://github.com/jesperpedersen/openshift-pgsql/",
    "labels": {
       "application": "openshift-pgsql11",
       "createdBy": "template-openshift-pgsql11-primary"
@@ -112,11 +112,6 @@
          "description": "The replication slot name 5",
          "name": "PG_REPLICA5",
          "value": "replica5"
-      },
-      {
-         "description": "The replication slot name 6",
-         "name": "PG_REPLICA6",
-         "value": "replica6"
       },
       {
          "description": "Size of /pgconf partition (GB)",
@@ -386,10 +381,6 @@
                            {
                               "name": "PG_REPLICA5",
                               "value": "${PG_REPLICA5}"
-                           },
-                           {
-                              "name": "PG_REPLICA6",
-                              "value": "${PG_REPLICA6}"
                            }
                         ],
                         "resources": {},

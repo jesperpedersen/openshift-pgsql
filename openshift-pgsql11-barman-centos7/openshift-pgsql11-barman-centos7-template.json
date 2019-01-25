@@ -1,0 +1,241 @@
+{
+   "kind": "Template",
+   "apiVersion": "v1",
+   "metadata": {
+      "name": "openshift-pgsql11-barman",
+      "annotations": {
+         "iconClass": "icon-postgresql",
+         "description": "Template for a PostgreSQL 11 barman node built using STI",
+         "tags": "database,postgresql"
+      }
+   },
+   "message": "The following service(s) have been created in your project: openshift-pgsql11-barman.\n\n  Master: ${PG_MASTER}\n  Database: ${PG_DATABASE}\n  Replication password: ${PG_REPLICATION_PASSWORD}\n\nFor more information about using this template, including OpenShift considerations,\nsee https://github.com/jesperpedersen/openshift-pgsql/",
+   "labels": {
+      "application": "openshift-pgsql11",
+      "createdBy": "template-openshift-pgsql11-barman"
+   },
+   "parameters": [
+      {
+         "description": "The IP of the PostgreSQL master node",
+         "name": "PG_MASTER"
+      },
+      {
+         "description": "The name of the database",
+         "name": "PG_DATABASE"
+      },
+      {
+         "description": "The password for the replication user",
+         "name": "PG_REPLICATION_PASSWORD"
+      },
+      {
+         "description": "Size of /pgconf partition (GB)",
+         "name": "PG_PGCONF",
+         "value": "1"
+      },
+      {
+         "description": "Size of /pgbackup partition (GB)",
+         "name": "PG_PGBACKUP",
+         "value": "10"
+      }
+   ],
+   "objects": [
+      {
+        "kind": "Secret",
+        "apiVersion": "v1",
+        "metadata": {
+          "name": "openshift-pgsql11-barman-secret",
+        },
+        "stringData" : {
+          "database-db" : "${PG_DATABASE}",
+          "database-replication-password" : "${PG_REPLICATION_PASSWORD}"
+        }
+      },
+      {
+         "kind": "PersistentVolumeClaim",
+         "apiVersion": "v1",
+         "metadata": {
+            "name": "openshift-pgsql11-barman-pgconf"
+         },
+         "spec": {
+            "accessModes": [
+               "ReadWriteOnce"
+            ],
+            "resources": {
+               "requests": {
+                  "storage": "${PG_PGCONF}Gi"
+               }
+            }
+         }
+      },
+      {
+         "kind": "PersistentVolumeClaim",
+         "apiVersion": "v1",
+         "metadata": {
+            "name": "openshift-pgsql11-barman-pgbackup"
+         },
+         "spec": {
+            "accessModes": [
+               "ReadWriteOnce"
+            ],
+            "resources": {
+               "requests": {
+                  "storage": "${PG_PGBACKUP}Gi"
+               }
+            }
+         }
+      },
+      {
+         "kind": "CronJob",
+         "apiVersion": "batch/v1beta1",
+         "metadata": {
+            "name": "openshift-pgsql11-barman-backup"
+         },
+         "spec": {
+            "schedule": "00 06  *   *   0",
+            "jobTemplate": {             
+               "spec": {
+                  "template": {
+                     "metadata": {
+                        "labels": {          
+                            "parent": "openshift-pgsql11-barman-backup"
+                        }
+                     },
+                     "spec": {
+                        "containers": [
+                           {
+                              "name": "openshift-pgsql11-barman",
+                              "image": "openshift-pgsql11-barman",
+                              "command": [ "/usr/bin/barman", "backup" ]
+                           }
+                        ],
+                        "restartPolicy": "OnFailure"
+                     }
+                  }
+               }
+            }
+         }
+       },
+       {
+         "kind": "DeploymentConfig",
+         "apiVersion": "v1",
+         "metadata": {
+            "name": "openshift-pgsql11-barman"
+         },
+         "spec": {
+            "strategy": {
+               "type": "Recreate"
+            },
+            "triggers": [
+               {
+                  "type": "ImageChange",
+                  "imageChangeParams": {
+                     "automatic": true,
+                     "containerNames": [
+                        "openshift-pgsql11-barman"
+                     ],
+                     "from": {
+                        "kind": "ImageStreamTag",
+                        "namespace": "myproject",
+                        "name": "openshift-pgsql11-barman-centos7:latest"
+                     }
+                  }
+               },
+               {
+                  "type": "ConfigChange"
+               }
+            ],
+            "replicas": 1,
+            "selector": {
+               "deploymentConfig": "openshift-pgsql11-barman"
+            },
+            "template": {
+               "metadata": {
+                  "name": "openshift-pgsql11-barman",
+                  "labels": {
+                     "deploymentConfig": "openshift-pgsql11-barman"
+                  }
+               },
+               "spec": {
+                  "volumes": [
+                     {
+                        "name": "openshift-pgsql11-barman-pgconf",
+                        "persistentVolumeClaim": {
+                           "claimName": "openshift-pgsql11-barman-pgconf"
+                        }
+                     },
+                     {
+                        "name": "openshift-pgsql11-barman-pgbackup",
+                        "persistentVolumeClaim": {
+                           "claimName": "openshift-pgsql11-barman-pgbackup"
+                        }
+                     }
+                  ],
+                  "containers": [
+                     {
+                        "name": "openshift-pgsql11-barman",
+                        "image": "openshift-pgsql11-barman",
+                        "readinessProbe": {
+                           "timeoutSeconds": 1,
+                           "initialDelaySeconds": 5,
+                           "exec": {
+                              "command": [ "/usr/libexec/check-container" ]
+                           }
+                        },
+                        "livenessProbe": {
+                           "timeoutSeconds": 10,
+                           "initialDelaySeconds": 120,
+                           "exec": {
+                              "command": [ "/usr/libexec/check-container" ]
+                           }
+                        },
+                        "env": [
+                           {
+                              "name": "PG_MASTER",
+                              "value": "${PG_MASTER}"
+                           },
+                           {
+                              "name": "PG_DATABASE",
+                              "valueFrom": {
+                                "secretKeyRef" : {
+                                  "name" : "openshift-pgsql11-barman-secret",
+                                  "key" : "database-db"
+                                }
+                              }
+                           },
+                           {
+                              "name": "PG_REPLICATION_PASSWORD",
+                              "valueFrom": {
+                                "secretKeyRef" : {
+                                  "name" : "openshift-pgsql11-barman-secret",
+                                  "key" : "database-replication-password"
+                                }
+                              }
+                           }
+                        ],
+                        "resources": {},
+                        "volumeMounts": [
+                           {
+                              "name": "openshift-pgsql11-barman-pgconf",
+                              "mountPath": "/pgconf"
+                           },
+                           {
+                              "name": "openshift-pgsql11-barman-pgbackup",
+                              "mountPath": "/pgbackup"
+                           }
+                        ],
+                        "terminationMessagePath": "/dev/termination-log",
+                        "imagePullPolicy": "IfNotPresent",
+                        "securityContext": {
+                           "capabilities": {},
+                           "privileged": false
+                        }
+                     }
+                  ],
+                  "restartPolicy": "Always",
+                  "dnsPolicy": "ClusterFirst"
+               }
+            }
+         }
+      }
+   ]
+}
